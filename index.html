@@ -187,7 +187,9 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
 /* Logo reel (fijo al hacer scroll) */
 .reel { position: relative; height: 600vh; margin-bottom: -18vh; }
 .gitem b.n-cantil { letter-spacing: .1em; }
-.reel-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; border-radius: 24px; transition: background-color .3s; }
+.reel-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; border-radius: 24px; }
+.stage, .gitem { will-change: transform, opacity; }
+.stage .lg { will-change: transform; }
 .stage { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 16px; text-align: center; padding: 20px; opacity: var(--o, 0); transform: translateY(var(--y, 0px)); pointer-events: none; }
 .stage .lg { width: min(230px, 52vw); height: auto; display: block; transform: scale(var(--s, 1)) rotate(var(--r, 0deg)); }
 .stage .sector { font-family: var(--font-mono); font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
@@ -221,7 +223,16 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
 
 /* Responsive */
 @media (max-width: 760px) {
-  .gather-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 14px; }
+  .reel { margin-bottom: 0; }
+  .gather { gap: 22px; padding: 16px 8px; }
+  .gather h3 { font-size: 1.55rem; }
+  .gather-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 8px; }
+  .gitem { gap: 8px; }
+  .gitem .lg { width: 64px; }
+  .gitem b { font-size: .8rem; line-height: 1.25; overflow-wrap: anywhere; }
+  .gitem b.n-cantil { letter-spacing: .04em; font-size: .68rem; }
+  .gitem span { font-size: .56rem; letter-spacing: .03em; line-height: 1.3; }
+  .stage .lg { width: min(190px, 50vw); }
 }
 @media (max-width: 860px) {
   .hero, .feature, .about { grid-template-columns: 1fr; gap: 36px; }
@@ -262,7 +273,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
     <div>
       <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Disponible para nuevos proyectos</p>
       <h1>Ruben Medina.<br>Webs con <em>buen gusto</em> y código limpio.</h1>
-      <p class="lede">Desarrollador web freelance. Diseño y construyo webs que se ven bien, cargan rápido y son fáciles de usar.</p>
+      <p class="lede">Desarrollador web freelance. Diseño y construyo webs interactivas y fáciles de usar.</p>
       <div class="actions">
         <a class="btn btn-primary" href="#contacto">Hablemos de tu proyecto</a>
         <a class="btn btn-ghost" href="#proyectos">Ver trabajo</a>
@@ -307,6 +318,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
         <h4>Web de Buen Rollo</h4>
         <p>Maquetación y estilos de la web de la empresa, adaptada a móvil y escritorio.</p>
         <div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span></div>
+        <a class="link-arrow" href="https://buenrollorolls.com/" target="_blank" rel="noopener">Visitar la web →</a>
       </div>
       <div class="slot real">
         <span class="slot-logo" data-logo="faro" aria-hidden="true"></span>
@@ -479,7 +491,7 @@ document.querySelectorAll('[data-copy]').forEach(function (b) {
   };
   function svg(k) { return '<svg class="lg" viewBox="0 0 120 120" aria-hidden="true">' + LOGOS[k] + "</svg>"; }
   var B = [
-    { k: "buenrollo", n: "Buen Rollo", s: "Trabajo en empresa", c: "#141414", url: "" },
+    { k: "buenrollo", n: "Buen Rollo", s: "Trabajo en empresa", c: "#141414", url: "https://buenrollorolls.com/" },
     { k: "faro", n: "Trattoria Il Faro", s: "Restaurante", c: "#1f3b2d", url: "il-faro/" },
     { k: "tostadero", n: "Tostadero Norte", s: "Tienda online", c: "#b3263a", url: "tostadero-norte/" },
     { k: "cantil", n: "Cantil Arquitectura", s: "Estudio de arquitectura", c: "#2f7a6b", url: "cantil/" },
@@ -505,11 +517,14 @@ document.querySelectorAll('[data-copy]').forEach(function (b) {
 
   function clamp(x) { return Math.max(0, Math.min(1, x)); }
   function ease(x) { return 1 - Math.pow(1 - x, 3); }
-  var N = B.length, T = N + 1.4, ticking = false;
-  function frame() {
-    ticking = false;
+  var N = B.length, T = N + 1.4;
+  var target = 0, cur = 0, running = false;
+  function measure() {
     var r = reel.getBoundingClientRect(), total = reel.offsetHeight - window.innerHeight;
-    var p = clamp(-r.top / (total || 1)), pos = p * T, active = -1, tint = 0;
+    target = clamp(-r.top / (total || 1));
+  }
+  function render(p) {
+    var pos = p * T, active = -1, tint = 0;
     stages.forEach(function (st, i) {
       var local = pos - i;
       var t = ease(clamp(local / .45));
@@ -531,10 +546,17 @@ document.querySelectorAll('[data-copy]').forEach(function (b) {
     hint.style.opacity = g > .9 ? 0 : 1;
     sticky.style.backgroundColor = active >= 0 ? "color-mix(in srgb, " + B[active].c + " " + Math.round(tint * 10) + "%, transparent)" : "transparent";
   }
-  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
+  function loop() {
+    measure();
+    var d = target - cur;
+    cur = Math.abs(d) < .0006 ? target : cur + d * .12;
+    render(cur);
+    if (cur !== target) requestAnimationFrame(loop); else running = false;
+  }
+  function onScroll() { if (!running) { running = true; requestAnimationFrame(loop); } }
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
-  frame();
+  measure(); cur = target; render(cur);
 })();
 </script>
 
