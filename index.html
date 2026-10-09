@@ -216,7 +216,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
 .n-mirador { font-family: var(--font-display); }
 .slot-logo { width: 52px; height: 52px; display: block; }
 .slot-logo svg { width: 100%; height: 100%; display: block; }
-.reel.static { height: auto; }
+.reel.static { height: auto; margin-bottom: 0; }
 .reel.static .reel-sticky { position: static; height: auto; padding-block: 40px; }
 .reel.static .stage, .reel.static .reel-count, .reel.static .reel-hint { display: none; }
 .reel.static .gather { position: static; --gi: 1; --gh: 1; }
@@ -551,7 +551,25 @@ document.querySelectorAll('[data-copy]').forEach(function (b) {
     var d = target - cur;
     cur = Math.abs(d) < .0006 ? target : cur + d * .12;
     render(cur);
+    if (cur >= .99 && target >= .99) { collapse(); running = false; return; }
     if (cur !== target) requestAnimationFrame(loop); else running = false;
+  }
+  // Al terminar la secuencia por primera vez, se recoge y queda solo la vista de conjunto
+  var done = false;
+  function collapse() {
+    if (done) return; done = true;
+    var grid = document.getElementById("gatherGrid");
+    var before = grid.getBoundingClientRect().top;
+    reel.classList.add("static");
+    sticky.style.backgroundColor = "";
+    gather.style.removeProperty("--gh");
+    items.forEach(function (it) { it.style.removeProperty("--gi"); });
+    gather.classList.add("live");
+    var after = grid.getBoundingClientRect().top;
+    try { window.scrollTo({ top: window.scrollY + (after - before), behavior: "instant" }); }
+    catch (e) { window.scrollTo(0, window.scrollY + (after - before)); }
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("resize", onScroll);
   }
   function onScroll() { if (!running) { running = true; requestAnimationFrame(loop); } }
   window.addEventListener("scroll", onScroll, { passive: true });
