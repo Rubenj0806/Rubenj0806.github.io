@@ -551,7 +551,7 @@ document.querySelectorAll('[data-copy]').forEach(function (b) {
     var d = target - cur;
     cur = Math.abs(d) < .0006 ? target : cur + d * .12;
     render(cur);
-    if (cur >= .99 && target >= .99) { collapse(); running = false; return; }
+    if (target >= .985) { render(1); collapse(); running = false; return; }
     if (cur !== target) requestAnimationFrame(loop); else running = false;
   }
   // Al terminar la secuencia por primera vez, se recoge y queda solo la vista de conjunto
