@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Tostadero Norte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Layout: tienda viva — hero tipográfico enorme con cinta de orígenes en movimiento, catálogo en rejilla con bolsas dibujadas en CSS, cajón de carrito lateral y modales. Look único: salvia + rojo cereza de café + espresso. */
+:root {
+  --bg: #e6ebe2;
+  --surface: #f5f7f2;
+  --ink: #221913;
+  --muted: #6b675f;
+  --line: #cdd3c7;
+  --cherry: #b3263a;
+  --cherry-dark: #8e1c2d;
+  --kraft: #c9ae84;
+  --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-inline: 20px; }
+button { font-family: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cherry); outline-offset: 3px; }
+body.locked { overflow: hidden; }
+
+.demo { background: var(--ink); color: #cfc8bd; font-size: .78rem; text-align: center; padding: 7px 16px; }
+.demo b { color: #f1a3ae; font-weight: 500; }
+
+/* Header */
+.header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.hbar { display: flex; align-items: center; gap: 18px; padding-block: 14px; }
+.logo { font-family: var(--display); font-weight: 800; font-size: 1.3rem; text-decoration: none; color: var(--ink); letter-spacing: -.02em; white-space: nowrap; }
+.logo span { color: var(--cherry); }
+.search { flex: 1; max-width: 420px; margin-left: auto; position: relative; min-width: 0; }
+.search input { width: 100%; padding: 10px 14px 10px 38px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font: inherit; font-size: .95rem; color: var(--ink); }
+.search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2; }
+.cartbtn { position: relative; display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: var(--surface); border: 0; padding: 10px 16px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: .92rem; white-space: nowrap; }
+.cartbtn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.badge { background: var(--cherry); color: #fff; border-radius: 999px; min-width: 22px; height: 22px; display: inline-grid; place-items: center; font-size: .78rem; padding: 0 6px; font-variant-numeric: tabular-nums; }
+.bump { animation: bump .45s cubic-bezier(.3,1.6,.5,1); }
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
+
+/* Hero */
+.hero { padding-block: 64px 30px; position: relative; overflow: hidden; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cherry); margin: 0 0 18px; }
+.hero h1 { font-family: var(--display); font-weight: 800; font-size: clamp(3.2rem, 9vw, 7.4rem); line-height: .88; letter-spacing: -.045em; margin: 0 0 24px; }
+.hero h1 .w { display: inline-block; animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
+.hero h1 .w:nth-child(2) { animation-delay: .08s; } .hero h1 .w:nth-child(3) { animation-delay: .16s; } .hero h1 .w:nth-child(4) { animation-delay: .24s; }
+.hero h1 em { font-style: normal; color: var(--cherry); }
+@keyframes rise { from { transform: translateY(40%); opacity: .2; } to { transform: none; opacity: 1; } }
+.hero p { font-size: 1.15rem; color: var(--muted); max-width: 40ch; margin: 0 0 28px; }
+.btn { display: inline-flex; align-items: center; gap: 10px; background: var(--cherry); color: #fff; border: 0; padding: 15px 26px; border-radius: 999px; font-weight: 700; font-size: 1rem; cursor: pointer; text-decoration: none; transition: background .2s, transform .2s; }
+.btn:hover { background: var(--cherry-dark); transform: translateY(-2px); }
+.btn.dark { background: var(--ink); }
+.hero-bags { position: relative; height: 380px; }
+.hero-bags .bag { position: absolute; width: 170px; }
+.hero-bags .bag:nth-child(1) { left: 6%; top: 40px; transform: rotate(-9deg); animation: float 6s ease-in-out infinite; }
+.hero-bags .bag:nth-child(2) { left: 34%; top: 0; z-index: 2; transform: rotate(3deg); animation: float 6s ease-in-out -2s infinite; }
+.hero-bags .bag:nth-child(3) { left: 60%; top: 70px; transform: rotate(11deg); animation: float 6s ease-in-out -4s infinite; }
+@keyframes float { 50% { translate: 0 -14px; } }
+
+/* Bag illustration */
+.bag { aspect-ratio: 3 / 4; max-width: 100%; position: relative; border-radius: 10px 10px 14px 14px; background: linear-gradient(160deg, color-mix(in srgb, var(--kraft) 85%, #fff) 0%, var(--kraft) 55%, color-mix(in srgb, var(--kraft) 80%, #000) 100%); box-shadow: inset 0 -10px 20px rgba(0,0,0,.08), 0 18px 30px -18px rgba(34,25,19,.45); }
+.bag::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 14%; border-radius: 10px 10px 0 0; background: repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 3px, transparent 3px 7px); }
+.bag .lbl { position: absolute; left: 14%; right: 14%; top: 28%; bottom: 16%; background: var(--c, var(--cherry)); border-radius: 6px; color: #fff; display: grid; align-content: space-between; padding: 10% 9%; overflow: hidden; }
+.bag .lbl b { font-family: var(--display); font-weight: 800; font-size: clamp(.8rem, 2.4vw, 1.15rem); line-height: .95; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.bag .lbl small { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+.bag .lbl i { position: absolute; right: -18%; bottom: -14%; width: 70%; aspect-ratio: 1; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); }
+.bag.tool { background: linear-gradient(160deg, #f7f7f4, #dfe2da); }
+.bag.tool::before { display: none; }
+
+/* Marquee */
+.marquee { border-block: 1px solid var(--ink); background: var(--ink); color: var(--surface); overflow: hidden; padding-block: 14px; margin-top: 40px; }
+.track { display: flex; gap: 40px; width: max-content; animation: scroll 32s linear infinite; font-family: var(--display); font-weight: 600; font-size: 1.4rem; white-space: nowrap; }
+.track span::after { content: "✦"; margin-left: 40px; color: #f1a3ae; }
+@keyframes scroll { to { transform: translateX(-50%); } }
+
+/* Sections */
+section { padding-block: 80px; }
+.shead { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+h2 { font-family: var(--display); font-weight: 800; letter-spacing: -.035em; font-size: clamp(2.2rem, 5.4vw, 4rem); line-height: .95; margin: 0; }
+h2 em { font-style: normal; color: var(--cherry); }
+
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 30px; }
+.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 8px 15px; border-radius: 999px; cursor: pointer; font-size: .9rem; font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+select option { background-color: var(--surface); color: var(--ink); }
+.controls select { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font: inherit; font-size: .9rem; color: var(--ink); margin-left: auto; }
+.count { color: var(--muted); font-size: .9rem; }
+
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.card { background: var(--surface); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; cursor: pointer; border: 1px solid transparent; transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .2s, box-shadow .35s; min-width: 0; text-align: left; font: inherit; }
+.card:hover { transform: translateY(-6px); border-color: var(--line); box-shadow: 0 24px 40px -28px rgba(34,25,19,.5); }
+.card .stage { background: var(--bg); border-radius: 12px; padding: 22px 26%; display: grid; place-items: center; overflow: hidden; }
+.card .stage .bag { width: 100%; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.card:hover .stage .bag { transform: rotate(-5deg) scale(1.06); }
+.card h3 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; margin: 0; letter-spacing: -.01em; }
+.meta { font-size: .84rem; color: var(--muted); margin: 0; }
+.notes { display: flex; gap: 6px; flex-wrap: wrap; }
+.note { font-size: .74rem; background: var(--bg); border-radius: 999px; padding: 3px 9px; }
+.cfoot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 10px; }
+.price { font-family: var(--display); font-weight: 800; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+.price small { font-family: var(--body); font-weight: 400; font-size: .75rem; color: var(--muted); }
+.add { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--ink); color: var(--surface); font-size: 1.4rem; cursor: pointer; display: grid; place-items: center; transition: background .2s, transform .2s; flex: 0 0 auto; }
+.add:hover { background: var(--cherry); transform: rotate(90deg); }
+.score { display: inline-flex; align-items: baseline; gap: 4px; font-size: .74rem; color: var(--cherry); font-weight: 700; }
+.empty { grid-column: 1 / -1; text-align: center; padding: 60px 0; color: var(--muted); }
+
+/* Story strip */
+.story { background: var(--cherry); color: #fff; border-radius: 28px; padding: 56px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+.story .big { font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; letter-spacing: -.04em; display: block; margin-bottom: 8px; }
+.story p { margin: 0; color: #f6d8dc; }
+
+/* Scroll-driven reveals (sin observadores: lo que ya está en pantalla se ve completo) */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% cover 28%; }
+    .grid .card { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% cover 22%; }
+    .story > div { animation: pop linear both; animation-timeline: view(); animation-range: entry 10% cover 35%; }
+    .hero-bags { animation: drift linear both; animation-timeline: scroll(root); animation-range: 0 600px; }
+  }
+}
+@keyframes reveal { from { opacity: 0; transform: translateY(60px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes pop { from { opacity: 0; transform: translateY(40px) rotate(-2deg); } to { opacity: 1; transform: none; } }
+@keyframes drift { to { transform: translateY(80px) rotate(-4deg); opacity: .5; } }
+
+/* Overlay, modal, drawer */
+.overlay { position: fixed; inset: 0; background: rgba(20,14,10,.5); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.overlay.on { opacity: 1; pointer-events: auto; }
+.modal { position: fixed; z-index: 50; left: 50%; top: 50%; width: min(880px, calc(100% - 32px)); max-height: calc(100% - 40px); overflow: auto; background: var(--surface); border-radius: 24px; transform: translate(-50%, -46%) scale(.96); opacity: 0; pointer-events: none; transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .25s; }
+.modal.on { transform: translate(-50%, -50%); opacity: 1; pointer-events: auto; }
+.mgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.mstage { background: var(--bg); padding: 50px 22%; display: grid; place-items: center; border-radius: 24px 0 0 24px; }
+.mstage .bag { width: 100%; }
+.mbody { padding: 36px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.mbody h3 { font-family: var(--display); font-weight: 800; font-size: 2.2rem; line-height: 1; letter-spacing: -.03em; margin: 0; }
+.close { position: absolute; top: 14px; right: 14px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 1.1rem; z-index: 2; }
+.specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.spec { background: var(--bg); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.spec small { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.spec b { font-size: .95rem; }
+.opt h4 { margin: 0 0 8px; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; }
+.qty button { width: 36px; height: 36px; border: 0; background: none; cursor: pointer; font-size: 1.1rem; }
+.qty span { min-width: 26px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+.buy { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.buy .btn { flex: 1; justify-content: center; min-width: 180px; }
+
+.drawer { position: fixed; z-index: 50; top: 0; right: 0; bottom: 0; width: min(430px, 100%); background: var(--surface); transform: translateX(100%); transition: transform .4s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.drawer.on { transform: none; }
+.dhead { display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; border-bottom: 1px solid var(--line); }
+.dhead h3 { font-family: var(--display); font-weight: 800; font-size: 1.6rem; margin: 0; letter-spacing: -.02em; }
+.dhead .close { position: static; }
+.dbody { flex: 1; overflow: auto; padding: 18px 24px; display: grid; gap: 14px; align-content: start; }
+.ship { background: var(--bg); border-radius: 12px; padding: 14px; font-size: .88rem; }
+.bar { height: 6px; background: var(--line); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--cherry); border-radius: 3px; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.line { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 14px; align-items: center; animation: slidein .35s ease both; }
+@keyframes slidein { from { opacity: 0; transform: translateX(20px); } }
+.line .mini { background: var(--bg); border-radius: 10px; padding: 8px 12px; }
+.line .bag .lbl b, .line .bag .lbl small { display: none; }
+.line h4 { margin: 0; font-size: .95rem; }
+.line p { margin: 2px 0 6px; font-size: .8rem; color: var(--muted); }
+.line .qty button { width: 28px; height: 28px; }
+.line .right { text-align: right; display: grid; gap: 4px; justify-items: end; }
+.remove { background: none; border: 0; color: var(--muted); font-size: .78rem; cursor: pointer; text-decoration: underline; padding: 0; }
+.dfoot { border-top: 1px solid var(--line); padding: 18px 24px 22px; display: grid; gap: 10px; }
+.row { display: flex; justify-content: space-between; font-size: .95rem; font-variant-numeric: tabular-nums; }
+.row.total { font-family: var(--display); font-weight: 800; font-size: 1.35rem; }
+.dfoot .btn { justify-content: center; }
+.dfoot .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.dempty { text-align: center; padding: 40px 10px; color: var(--muted); display: grid; gap: 14px; justify-items: center; }
+
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.f { display: grid; gap: 4px; min-width: 0; }
+.f.full { grid-column: 1 / -1; }
+.f label { font-size: .8rem; color: var(--muted); }
+.f input { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: .95rem; color: var(--ink); width: 100%; }
+.pay { display: grid; gap: 8px; }
+.pay label { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; font-size: .92rem; }
+.pay label input { width: 18px; height: 18px; padding: 0; margin: 0; flex: 0 0 auto; border: 0; accent-color: var(--cherry); }
+.pay label:has(input:checked) { border-color: var(--ink); background: var(--bg); }
+.err { color: var(--cherry); font-size: .82rem; min-height: 1em; margin: 0; }
+.done { text-align: center; display: grid; gap: 12px; justify-items: center; padding: 30px 6px; }
+.done .tick { width: 76px; height: 76px; border-radius: 50%; background: var(--cherry); color: #fff; display: grid; place-items: center; font-size: 2rem; animation: bump .6s cubic-bezier(.3,1.6,.5,1); }
+.done h4 { font-family: var(--display); font-weight: 800; font-size: 1.8rem; margin: 0; letter-spacing: -.02em; }
+.done p { margin: 0; color: var(--muted); font-size: .92rem; }
+.done code { background: var(--bg); padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: .08em; }
+
+.toast { position: fixed; z-index: 60; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, calc(100% + 60px)); visibility: hidden; background: var(--ink); color: var(--surface); padding: 12px 20px; border-radius: 999px; font-size: .92rem; transition: transform .35s cubic-bezier(.2,.8,.2,1), visibility 0s .35s; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+.toast.on { transform: translate(-50%, 0); visibility: visible; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.flyer { position: fixed; left: 0; top: 0; z-index: 70; width: 18px; height: 18px; border-radius: 50%; background: var(--cherry); pointer-events: none; }
+
+footer { border-top: 1px solid var(--line); padding-block: 30px; font-size: .85rem; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer a { color: var(--cherry); }
+
+@media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 820px) {
+  .hero-grid, .mgrid { grid-template-columns: 1fr; }
+  .hero-bags { height: 260px; max-width: 460px; }
+  .hero-bags .bag { width: 120px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .story { grid-template-columns: 1fr; padding: 36px; }
+  .mstage { border-radius: 24px 24px 0 0; padding: 30px 30%; }
+  .mbody { padding: 24px; }
+  .controls select { margin-left: 0; }
+}
+@media (max-width: 560px) {
+  .wrap { padding-inline: 16px; }
+  .search { display: none; }
+  .cartbtn { margin-left: auto; }
+  .grid { grid-template-columns: 1fr; }
+  .specs { grid-template-columns: 1fr 1fr; }
+  .fields { grid-template-columns: 1fr; }
+  section { padding-block: 56px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+
+<div class="demo">Proyecto de demostración · <b>tienda ficticia, no se realiza ninguna compra</b> · diseño y desarrollo de Ruben Medina · <a href="../" style="color:inherit;font-weight:600">← Volver al portafolio</a></div>
+
+<header class="header">
+  <div class="wrap hbar">
+    <a class="logo" href="#top">Tostadero<span>.</span>Norte</a>
+    <div class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="q" type="search" placeholder="Busca por origen, nota o producto" aria-label="Buscar productos">
+    </div>
+    <button class="cartbtn" id="cartBtn" type="button" aria-label="Abrir carrito">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.5 12h-11z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      Carrito <span class="badge" id="badge">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">● Tostado esta semana</p>
+      <h1><span class="w">Café</span> <span class="w">que</span> <span class="w">sabe</span> <span class="w"><em>a&nbsp;origen.</em></span></h1>
+      <p>Tostamos en pequeños lotes cada martes y enviamos en 24 horas. Granos de especialidad de productores que conocemos por su nombre.</p>
+      <a class="btn" href="#tienda">Ver los cafés →</a>
+    </div>
+    <div class="hero-bags" aria-hidden="true" id="heroBags"></div>
+  </div>
+  <div class="marquee" aria-hidden="true">
+    <div class="track" id="track"></div>
+  </div>
+</div>
+
+<section id="tienda">
+  <div class="wrap">
+    <div class="shead reveal">
+      <h2>La <em>tienda</em>.</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="controls reveal">
+      <div class="seg" id="cats" role="group" aria-label="Categoría">
+        <button type="button" data-cat="all" aria-pressed="true">Todo</button>
+        <button type="button" data-cat="cafe" aria-pressed="false">Café</button>
+        <button type="button" data-cat="metodo" aria-pressed="false">Métodos</button>
+        <button type="button" data-cat="pack" aria-pressed="false">Packs</button>
+      </div>
+      <div class="seg" id="roasts" role="group" aria-label="Tueste">
+        <button type="button" data-roast="all" aria-pressed="true">Cualquier tueste</button>
+        <button type="button" data-roast="Claro" aria-pressed="false">Claro</button>
+        <button type="button" data-roast="Medio" aria-pressed="false">Medio</button>
+        <button type="button" data-roast="Oscuro" aria-pressed="false">Oscuro</button>
+      </div>
+      <select id="sort" aria-label="Ordenar">
+        <option value="pop">Más vendidos</option>
+        <option value="asc">Precio: menor a mayor</option>
+        <option value="desc">Precio: mayor a menor</option>
+        <option value="score">Mejor puntuación</option>
+      </select>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="story">
+      <div><span class="big">72 h</span><p>Del tostador a tu puerta. Cada bolsa lleva impresa su fecha de tueste.</p></div>
+      <div><span class="big">+84</span><p>Solo trabajamos cafés con más de 84 puntos en la escala SCA.</p></div>
+      <div><span class="big">35 €</span><p>A partir de esta cantidad, el envío a península es gratis.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Tostadero Norte es una marca ficticia creada como demostración.</span>
+    <span>Diseño y desarrollo: <a href="https://github.com/Rubenj0806" target="_blank" rel="noopener">Ruben Medina</a></span>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"></div>
+
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Carrito">
+  <div class="dhead"><h3 id="dTitle">Tu carrito</h3><button class="close" type="button" id="dClose" aria-label="Cerrar carrito">✕</button></div>
+  <div class="dbody" id="dBody"></div>
+  <div class="dfoot" id="dFoot"></div>
+</aside>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var P = [
+    { id: "huila", cat: "cafe", n: "Colombia Huila", o: "Colombia", proc: "Lavado", alt: "1.750 m", roast: "Medio", sca: 86, notes: ["Caramelo", "Manzana roja", "Cacao"], p: 11.9, c: "#b3263a", pop: 1 },
+    { id: "yirga", cat: "cafe", n: "Etiopía Yirgacheffe", o: "Etiopía", proc: "Lavado", alt: "2.000 m", roast: "Claro", sca: 88, notes: ["Jazmín", "Bergamota", "Limón"], p: 13.5, c: "#3d5a80", pop: 2 },
+    { id: "guji", cat: "cafe", n: "Etiopía Guji Natural", o: "Etiopía", proc: "Natural", alt: "2.100 m", roast: "Claro", sca: 89, notes: ["Arándano", "Vino tinto", "Chocolate"], p: 14.9, c: "#6a2c70", pop: 4 },
+    { id: "cerrado", cat: "cafe", n: "Brasil Cerrado", o: "Brasil", proc: "Natural", alt: "1.100 m", roast: "Oscuro", sca: 84, notes: ["Avellana", "Chocolate negro", "Melaza"], p: 9.9, c: "#5b3a29", pop: 3 },
+    { id: "tarrazu", cat: "cafe", n: "Costa Rica Tarrazú", o: "Costa Rica", proc: "Honey", alt: "1.600 m", roast: "Medio", sca: 87, notes: ["Miel", "Melocotón", "Almendra"], p: 12.9, c: "#d17a22", pop: 6 },
+    { id: "kenia", cat: "cafe", n: "Kenia Nyeri AA", o: "Kenia", proc: "Lavado", alt: "1.800 m", roast: "Claro", sca: 88, notes: ["Grosella", "Pomelo", "Mora"], p: 15.5, c: "#2e7d5b", pop: 8 },
+    { id: "huehue", cat: "cafe", n: "Guatemala Huehuetenango", o: "Guatemala", proc: "Lavado", alt: "1.900 m", roast: "Medio", sca: 86, notes: ["Ciruela", "Panela", "Nuez"], p: 12.5, c: "#8c5e3c", pop: 5 },
+    { id: "sumatra", cat: "cafe", n: "Sumatra Mandheling", o: "Indonesia", proc: "Semi-lavado", alt: "1.400 m", roast: "Oscuro", sca: 85, notes: ["Cedro", "Especias", "Chocolate"], p: 11.5, c: "#33413a", pop: 9 },
+    { id: "v60", cat: "metodo", n: "Dripper V60 cerámica", o: "Método", notes: ["Filtro", "1–2 tazas"], p: 24, c: "#b3263a", pop: 7, tool: true },
+    { id: "prensa", cat: "metodo", n: "Prensa francesa 600 ml", o: "Método", notes: ["Inmersión", "4 tazas"], p: 29.9, c: "#221913", pop: 11, tool: true },
+    { id: "molino", cat: "metodo", n: "Molinillo manual de muelas", o: "Método", notes: ["Muelas cónicas", "Acero"], p: 49, c: "#5f6b5a", pop: 10, tool: true },
+    { id: "pack", cat: "pack", n: "Pack descubrimiento", o: "3 orígenes", notes: ["3 × 125 g", "Etiopía · Colombia · Brasil"], p: 19.9, c: "#d17a22", pop: 12, packTag: true }
+  ];
+  var GRINDS = ["En grano", "Espresso", "Moka", "Filtro / V60", "Prensa francesa"];
+  var SIZES = [{ id: "250", label: "250 g", k: 1 }, { id: "1000", label: "1 kg", k: 3.4 }];
+  var FREE = 35, SHIP = 4.5;
+
+  var state = { cat: "all", roast: "all", q: "", sort: "pop", cart: [] };
+  function $(id) { return document.getElementById(id); }
+  function eur(n) { return n.toFixed(2).replace(".", ",") + " €"; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function bagHTML(x) {
+    var sub = x.cat === "cafe" ? x.proc + " · " + x.roast : x.cat === "pack" ? "Pack" : "Método";
+    return '<div class="bag' + (x.tool ? " tool" : "") + '" style="--c:' + x.c + '"><div class="lbl"><small>Tostadero Norte</small><b>' + esc(x.n.split(" ").slice(0, 2).join(" ")) + "</b><small>" + esc(sub) + "</small><i></i></div></div>";
+  }
+
+  // Hero & marquee
+  $("heroBags").innerHTML = [P[1], P[0], P[2]].map(bagHTML).join("");
+  var origins = ["Etiopía", "Colombia", "Kenia", "Costa Rica", "Guatemala", "Brasil", "Sumatra", "Ruanda", "Panamá"];
+  var half = origins.map(function (o) { return "<span>" + o + "</span>"; }).join("");
+  $("track").innerHTML = half + half;
+
+  // Catalog
+  function filtered() {
+    var q = state.q.toLowerCase();
+    var list = P.filter(function (x) {
+      if (state.cat !== "all" && x.cat !== state.cat) return false;
+      if (state.roast !== "all" && x.roast !== state.roast) return false;
+      if (q) { var hay = (x.n + " " + x.o + " " + (x.notes || []).join(" ") + " " + (x.proc || "")).toLowerCase(); if (hay.indexOf(q) < 0) return false; }
+      return true;
+    });
+    var s = state.sort;
+    list.sort(function (a, b) { return s === "asc" ? a.p - b.p : s === "desc" ? b.p - a.p : s === "score" ? (b.sca || 0) - (a.sca || 0) : a.pop - b.pop; });
+    return list;
+  }
+  function renderGrid() {
+    var list = filtered();
+    $("count").textContent = list.length + (list.length === 1 ? " producto" : " productos");
+    if (!list.length) { $("grid").innerHTML = '<div class="empty">No encontramos nada con esa búsqueda. Prueba con un origen, como "Etiopía", o una nota, como "chocolate".</div>'; return; }
+    $("grid").innerHTML = list.map(function (x) {
+      return '<article class="card" data-id="' + x.id + '" tabindex="0" aria-label="' + esc(x.n) + '"><div class="stage">' + bagHTML(x) + "</div>" +
+        (x.sca ? '<span class="score">' + x.sca + " pts SCA</span>" : '<span class="score">' + (x.cat === "pack" ? "Ideal para regalar" : "Accesorio") + "</span>") +
+        "<h3>" + esc(x.n) + '</h3><p class="meta">' + esc(x.cat === "cafe" ? x.proc + " · tueste " + x.roast.toLowerCase() + " · " + x.alt : x.o) + '</p><div class="notes">' +
+        (x.notes || []).map(function (t) { return '<span class="note">' + esc(t) + "</span>"; }).join("") +
+        '</div><div class="cfoot"><span class="price">' + eur(x.p) + (x.cat === "cafe" ? " <small>/ 250 g</small>" : "") + '</span><button class="add" type="button" data-quick="' + x.id + '" aria-label="Añadir ' + esc(x.n) + ' al carrito">+</button></div></article>';
+    }).join("");
+  }
+  function press(groupId, attr, val) {
+    $(groupId).querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute(attr) === val); });
+  }
+  $("cats").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; state.cat = b.dataset.cat; press("cats", "data-cat", state.cat); renderGrid(); });
+  $("roasts").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; state.roast = b.dataset.roast; press("roasts", "data-roast", state.roast); renderGrid(); });
+  $("sort").addEventListener("change", function () { state.sort = this.value; renderGrid(); });
+  $("q").addEventListener("input", function () { state.q = this.value.trim(); renderGrid(); if (state.q) document.getElementById("tienda").scrollIntoView({ block: "start" }); });
+  $("grid").addEventListener("click", function (e) {
+    var q = e.target.closest("[data-quick]");
+    if (q) { e.stopPropagation(); var x = byId(q.dataset.quick); addToCart(x, "250", x.cat === "cafe" ? "En grano" : null, 1, q); return; }
+    var c = e.target.closest(".card"); if (c) openProduct(c.dataset.id);
+  });
+  $("grid").addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.classList.contains("card")) openProduct(e.target.dataset.id); });
+  function byId(id) { return P.find(function (x) { return x.id === id; }); }
+
+  // Overlay control
+  var lastFocus = null;
+  function openLayer(el) { lastFocus = document.activeElement; $("overlay").classList.add("on"); el.classList.add("on"); document.body.classList.add("locked"); setTimeout(function () { var f = el.querySelector("button, input, select"); if (f) f.focus(); }, 50); }
+  function closeAll() { ["modal", "drawer"].forEach(function (id) { $(id).classList.remove("on"); }); $("overlay").classList.remove("on"); document.body.classList.remove("locked"); if (lastFocus) lastFocus.focus(); }
+  $("overlay").addEventListener("click", closeAll);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAll(); });
+
+  // Product modal
+  var sel = {};
+  function openProduct(id) {
+    var x = byId(id); sel = { size: "250", grind: "En grano", qty: 1 };
+    renderModal(x); openLayer($("modal"));
+  }
+  function renderModal(x) {
+    var isCafe = x.cat === "cafe";
+    var price = x.p * (isCafe ? SIZES.find(function (s) { return s.id === sel.size; }).k : 1);
+    var html = '<button class="close" type="button" data-close aria-label="Cerrar">✕</button><div class="mgrid"><div class="mstage">' + bagHTML(x) + '</div><div class="mbody">' +
+      (x.sca ? '<span class="score">' + x.sca + " puntos SCA</span>" : "") + '<h3 id="mTitle">' + esc(x.n) + "</h3>";
+    if (isCafe) {
+      html += '<div class="specs"><div class="spec"><small>Proceso</small><b>' + x.proc + '</b></div><div class="spec"><small>Altitud</small><b>' + x.alt + '</b></div><div class="spec"><small>Tueste</small><b>' + x.roast + "</b></div></div>";
+      html += '<p class="meta">Notas de cata: ' + x.notes.join(", ").toLowerCase() + ". Tostado el martes pasado.</p>";
+      html += '<div class="opt"><h4>Formato</h4><div class="seg" data-opt="size">' + SIZES.map(function (s) { return '<button type="button" data-v="' + s.id + '" aria-pressed="' + (sel.size === s.id) + '">' + s.label + "</button>"; }).join("") + "</div></div>";
+      html += '<div class="opt"><h4>Molienda</h4><div class="seg" data-opt="grind">' + GRINDS.map(function (g) { return '<button type="button" data-v="' + g + '" aria-pressed="' + (sel.grind === g) + '">' + g + "</button>"; }).join("") + "</div></div>";
+    } else {
+      html += '<p class="meta">' + esc(x.notes.join(" · ")) + ". " + (x.cat === "pack" ? "Tres bolsas pequeñas para encontrar tu origen favorito." : "Lo usamos a diario en nuestra barra de pruebas.") + "</p>";
+    }
+    html += '<div class="buy"><div class="qty"><button type="button" data-q="-1" aria-label="Menos">−</button><span>' + sel.qty + '</span><button type="button" data-q="1" aria-label="Más">+</button></div><button class="btn" type="button" data-add>Añadir · ' + eur(price * sel.qty) + "</button></div></div></div>";
+    $("modal").innerHTML = html; $("modal").dataset.id = x.id;
+  }
+  $("modal").addEventListener("click", function (e) {
+    var x = byId($("modal").dataset.id);
+    if (e.target.closest("[data-close]")) return closeAll();
+    var o = e.target.closest("[data-opt] button");
+    if (o) { sel[o.parentNode.dataset.opt] = o.dataset.v; renderModal(x); return; }
+    var q = e.target.closest("[data-q]");
+    if (q) { sel.qty = Math.max(1, Math.min(10, sel.qty + +q.dataset.q)); renderModal(x); return; }
+    var a = e.target.closest("[data-add]");
+    if (a) { addToCart(x, sel.size, x.cat === "cafe" ? sel.grind : null, sel.qty, a); closeAll(); }
+  });
+
+  // Cart
+  function unit(item) { var x = byId(item.id); return x.p * (x.cat === "cafe" ? SIZES.find(function (s) { return s.id === item.size; }).k : 1); }
+  function addToCart(x, size, grind, qty, fromEl) {
+    var key = x.id + "|" + size + "|" + grind;
+    var ex = state.cart.find(function (i) { return i.key === key; });
+    if (ex) ex.qty += qty; else state.cart.push({ key: key, id: x.id, size: size, grind: grind, qty: qty });
+    fly(fromEl); updateBadge(true); renderCart();
+    toast("Añadido: " + x.n + (x.cat === "cafe" ? " · " + (size === "1000" ? "1 kg" : "250 g") : ""));
+  }
+  function totals() {
+    var sub = state.cart.reduce(function (s, i) { return s + unit(i) * i.qty; }, 0);
+    var ship = sub === 0 || sub >= FREE ? 0 : SHIP;
+    return { sub: sub, ship: ship, total: sub + ship };
+  }
+  function updateBadge(anim) {
+    var n = state.cart.reduce(function (s, i) { return s + i.qty; }, 0);
+    var b = $("badge"); b.textContent = n;
+    if (anim) { b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+  }
+  var step = "cart";
+  function renderCart() {
+    var t = totals();
+    $("dTitle").textContent = step === "cart" ? "Tu carrito" : step === "checkout" ? "Datos de envío" : "Pedido realizado";
+    if (step === "done") return;
+    if (step === "checkout") return renderCheckout(t);
+    if (!state.cart.length) {
+      $("dBody").innerHTML = '<div class="dempty"><p>Tu carrito está vacío.</p><button class="btn dark" type="button" data-shop>Ir a la tienda</button></div>';
+      $("dFoot").innerHTML = ""; return;
+    }
+    var left = FREE - t.sub;
+    var html = '<div class="ship">' + (left > 0 ? "Te faltan <b>" + eur(left) + "</b> para el envío gratis." : "<b>¡Tienes envío gratis!</b>") + '<div class="bar"><i style="width:' + Math.min(100, t.sub / FREE * 100) + '%"></i></div></div>';
+    html += state.cart.map(function (i) {
+      var x = byId(i.id);
+      return '<div class="line"><div class="mini">' + bagHTML(x) + '</div><div><h4>' + esc(x.n) + "</h4><p>" + (x.cat === "cafe" ? (i.size === "1000" ? "1 kg" : "250 g") + " · " + i.grind : esc(x.o)) + '</p><div class="qty"><button type="button" data-ck="' + i.key + '" data-d="-1" aria-label="Menos">−</button><span>' + i.qty + '</span><button type="button" data-ck="' + i.key + '" data-d="1" aria-label="Más">+</button></div></div><div class="right"><b>' + eur(unit(i) * i.qty) + '</b><button class="remove" type="button" data-rm="' + i.key + '">Quitar</button></div></div>';
+    }).join("");
+    $("dBody").innerHTML = html;
+    $("dFoot").innerHTML = '<div class="row"><span>Subtotal</span><span>' + eur(t.sub) + '</span></div><div class="row"><span>Envío</span><span>' + (t.ship ? eur(t.ship) : "Gratis") + '</span></div><div class="row total"><span>Total</span><span>' + eur(t.total) + '</span></div><button class="btn" type="button" data-go>Tramitar pedido →</button>';
+  }
+  function renderCheckout(t) {
+    $("dBody").innerHTML = '<form id="co" novalidate class="fields">' +
+      '<div class="f full"><label for="cName">Nombre y apellidos</label><input id="cName" autocomplete="name" value="Marta Iglesias"></div>' +
+      '<div class="f full"><label for="cAddr">Dirección</label><input id="cAddr" autocomplete="street-address" value="Calle del Ejemplo, 14, 2º B"></div>' +
+      '<div class="f"><label for="cZip">Código postal</label><input id="cZip" inputmode="numeric" value="28012"></div>' +
+      '<div class="f"><label for="cCity">Ciudad</label><input id="cCity" value="Madrid"></div>' +
+      '<div class="f full"><label for="cMail">Email</label><input id="cMail" type="email" value="marta@ejemplo.com"></div>' +
+      '<div class="f full"><label>Forma de pago (simulada)</label><div class="pay"><label><input type="radio" name="pay" value="Tarjeta" checked> Tarjeta</label><label><input type="radio" name="pay" value="Bizum"> Bizum</label><label><input type="radio" name="pay" value="Contrarreembolso"> Contrarreembolso (+2 €)</label></div></div>' +
+      '<p class="err f full" id="coErr"></p></form>';
+    $("dFoot").innerHTML = '<div class="row total"><span>Total</span><span id="coTotal">' + eur(t.total) + '</span></div><button class="btn" type="submit" form="co">Pagar ' + eur(t.total) + '</button><button class="remove" type="button" data-back>← Volver al carrito</button>';
+    $("co").addEventListener("change", function () {
+      var extra = document.querySelector('input[name="pay"]:checked').value === "Contrarreembolso" ? 2 : 0;
+      $("coTotal").textContent = eur(t.total + extra);
+      $("dFoot").querySelector(".btn").textContent = "Pagar " + eur(t.total + extra);
+    });
+    $("co").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var zip = $("cZip").value.trim(), mail = $("cMail").value.trim();
+      var msg = "";
+      if ($("cName").value.trim().length < 3) msg = "Escribe tu nombre completo.";
+      else if ($("cAddr").value.trim().length < 5) msg = "Escribe la dirección de entrega.";
+      else if (!/^\d{5}$/.test(zip)) msg = "El código postal tiene 5 cifras, por ejemplo 28012.";
+      else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) msg = "Revisa el email, por ejemplo nombre@dominio.com.";
+      $("coErr").textContent = msg; if (msg) return;
+      var order = "TN-" + (Math.floor(Math.random() * 90000) + 10000);
+      var first = $("cName").value.trim().split(" ")[0];
+      step = "done"; $("dTitle").textContent = "Pedido realizado";
+      $("dBody").innerHTML = '<div class="done"><div class="tick">✓</div><h4>¡Gracias, ' + esc(first) + "!</h4><p>Tu pedido está confirmado. Lo tostamos el martes y te llega en 24–48 h.</p><code>" + order + "</code><p>Esto es una demostración: no se ha cobrado ni enviado nada.</p></div>";
+      $("dFoot").innerHTML = '<button class="btn dark" type="button" data-reset>Seguir comprando</button>';
+      state.cart = []; updateBadge(false);
+    });
+  }
+  $("drawer").addEventListener("click", function (e) {
+    var t = e.target;
+    if (t.closest("#dClose")) return closeAll();
+    if (t.closest("[data-shop]")) { closeAll(); document.getElementById("tienda").scrollIntoView({ behavior: "smooth" }); return; }
+    var d = t.closest("[data-d]");
+    if (d) { var it = state.cart.find(function (i) { return i.key === d.dataset.ck; }); it.qty += +d.dataset.d; if (it.qty < 1) state.cart.splice(state.cart.indexOf(it), 1); updateBadge(false); renderCart(); return; }
+    var r = t.closest("[data-rm]");
+    if (r) { state.cart = state.cart.filter(function (i) { return i.key !== r.dataset.rm; }); updateBadge(false); renderCart(); return; }
+    if (t.closest("[data-go]")) { step = "checkout"; renderCart(); return; }
+    if (t.closest("[data-back]")) { step = "cart"; renderCart(); return; }
+    if (t.closest("[data-reset]")) { step = "cart"; renderCart(); closeAll(); }
+  });
+  $("cartBtn").addEventListener("click", function () { if (step === "done") step = "cart"; renderCart(); openLayer($("drawer")); });
+
+  // Micro-animaciones
+  function fly(fromEl) {
+    if (!fromEl || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !Element.prototype.animate) return;
+    var a = fromEl.getBoundingClientRect(), b = $("cartBtn").getBoundingClientRect();
+    var dot = document.createElement("div"); dot.className = "flyer"; document.body.appendChild(dot);
+    var sx = a.left + a.width / 2 - 9, sy = a.top + a.height / 2 - 9, ex = b.left + b.width - 22, ey = b.top + b.height / 2 - 9;
+    dot.animate([
+      { transform: "translate(" + sx + "px," + sy + "px) scale(1)" },
+      { transform: "translate(" + (sx + ex) / 2 + "px," + (Math.min(sy, ey) - 120) + "px) scale(1.3)", offset: .5 },
+      { transform: "translate(" + ex + "px," + ey + "px) scale(.5)" }
+    ], { duration: 650, easing: "cubic-bezier(.4,0,.2,1)" }).onfinish = function () { dot.remove(); };
+  }
+  var tt;
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(function () { t.classList.remove("on"); }, 2200); }
+
+  renderGrid(); renderCart();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Forja Gym</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: señalética de gimnasio — amarillo de marcaje sobre papel claro, tinta negra, colores de discos olímpicos (rojo 25, azul 20, verde 10) como acentos de dato. Hero con pictograma animado, barra que se carga al hacer scroll, horario en rejilla semanal. */
+:root {
+  --bg: #f3f2ee;
+  --ink: #0f0f0f;
+  --muted: #5f5e59;
+  --line: #d9d7d0;
+  --yellow: #ffcf26;
+  --red: #e5372b;
+  --blue: #2457d6;
+  --green: #22a05a;
+  --card: #ffffff;
+  --display: "Big Shoulders Display", "Impact", "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --cond: "Barlow Condensed", "Arial Narrow", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; }
+button { font-family: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+body.locked { overflow: hidden; }
+
+.demo { background: var(--ink); color: #bdbcb6; font-size: .78rem; text-align: center; padding: 7px 16px; }
+.demo b { color: var(--yellow); font-weight: 600; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 16px; flex-wrap: wrap; }
+.logo { font-family: var(--display); font-weight: 900; font-size: 1.9rem; letter-spacing: .02em; text-decoration: none; text-transform: uppercase; line-height: 1; display: inline-flex; align-items: center; gap: 8px; }
+.logo i { display: inline-block; width: 26px; height: 10px; background: var(--ink); border-radius: 2px; position: relative; }
+.logo i::before, .logo i::after { content: ""; position: absolute; top: -7px; width: 6px; height: 24px; background: var(--yellow); border: 2px solid var(--ink); border-radius: 2px; }
+.logo i::before { left: -4px; } .logo i::after { right: -4px; }
+.nav ul { list-style: none; display: flex; gap: 22px; margin: 0; padding: 0; flex-wrap: wrap; align-items: center; }
+.nav ul a { text-decoration: none; font-family: var(--cond); font-weight: 600; font-size: 1.05rem; text-transform: uppercase; letter-spacing: .04em; }
+.pill { background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 999px; }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 32px; align-items: stretch; padding-block: 20px 56px; }
+.hero > div { min-width: 0; }
+.hero h1 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(3.6rem, 10vw, 8.6rem); line-height: .82; letter-spacing: -.01em; margin: 10px 0 26px; }
+.hero h1 span { display: block; }
+.hero h1 .hl { background: var(--yellow); display: block; width: fit-content; padding: 0 .08em; transform: skewX(-6deg); }
+.hero h1 .hl em { font-style: normal; display: inline-block; transform: skewX(6deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1 span { animation: slam .7s cubic-bezier(.2,1.4,.4,1) both; }
+  .hero h1 span:nth-child(2) { animation-delay: .12s; } .hero h1 span:nth-child(3) { animation-delay: .24s; }
+}
+@keyframes slam { from { transform: translateY(-30px) scale(1.06); opacity: .15; } to { transform: none; opacity: 1; } }
+.hero p { font-size: 1.15rem; max-width: 40ch; margin: 0 0 26px; color: var(--muted); }
+.btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--bg); border: 0; padding: 15px 26px; border-radius: 999px; font-family: var(--cond); font-weight: 700; font-size: 1.15rem; text-transform: uppercase; letter-spacing: .04em; cursor: pointer; text-decoration: none; transition: transform .2s; }
+.btn:hover { transform: translateY(-3px); }
+.btn.y { background: var(--yellow); color: var(--ink); }
+.btn.o { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+.lift { background: var(--yellow); border-radius: 28px; position: relative; overflow: hidden; display: grid; place-items: end center; min-height: 420px; }
+.lift svg { width: min(78%, 360px); height: auto; display: block; position: relative; z-index: 1; }
+.lift .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 18%; background: repeating-linear-gradient(-45deg, var(--ink) 0 14px, var(--yellow) 14px 28px); opacity: .9; }
+.lift .rep { position: absolute; top: 20px; left: 22px; font-family: var(--cond); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .95rem; z-index: 2; }
+.lift .rep b { font-family: var(--display); font-size: 3.4rem; line-height: .9; display: block; font-variant-numeric: tabular-nums; }
+.lift .tag { position: absolute; top: 22px; right: 22px; background: var(--ink); color: var(--yellow); font-family: var(--cond); font-weight: 700; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; font-size: .9rem; z-index: 2; }
+
+/* Marquee */
+.marquee { background: var(--ink); color: var(--bg); overflow: hidden; padding-block: 14px; transform: rotate(-1.4deg); margin: 0 -20px; }
+.track { display: flex; gap: 34px; width: max-content; animation: run 26s linear infinite; font-family: var(--display); font-weight: 800; font-size: 2.1rem; text-transform: uppercase; white-space: nowrap; }
+.track span::after { content: "●"; color: var(--yellow); margin-left: 34px; font-size: 1rem; vertical-align: middle; }
+@keyframes run { to { transform: translateX(-50%); } }
+
+/* Barbell scroll section */
+.load { height: 230vh; position: relative; margin-top: 60px; }
+.load-sticky { position: sticky; top: 0; height: 100vh; display: grid; align-content: center; gap: 18px; overflow: hidden; }
+.load h2, h2 { font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(2.8rem, 7vw, 6rem); line-height: .86; margin: 0; letter-spacing: -.005em; }
+.load-top { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; }
+.kg { font-family: var(--display); font-weight: 900; font-size: clamp(4rem, 12vw, 9rem); line-height: .8; font-variant-numeric: tabular-nums; }
+.kg small { font-size: .35em; margin-left: 6px; }
+.week { font-family: var(--cond); font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.barbell { width: 100%; height: auto; display: block; max-width: 100%; }
+.plate { transition: transform .45s cubic-bezier(.2,1.3,.4,1), opacity .3s; }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; font-family: var(--cond); font-weight: 600; font-size: 1rem; text-transform: uppercase; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+
+/* Sections */
+section { padding-block: 84px; }
+.shead { display: flex; justify-content: space-between; align-items: end; gap: 18px 40px; flex-wrap: wrap; margin-bottom: 30px; }
+.shead p { margin: 0; color: var(--muted); max-width: 44ch; flex: 0 1 44ch; }
+
+/* Schedule */
+.types { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip { border: 2px solid var(--ink); background: transparent; border-radius: 999px; padding: 6px 14px; font-family: var(--cond); font-weight: 700; font-size: .98rem; text-transform: uppercase; letter-spacing: .03em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); display: inline-block; box-shadow: 0 0 0 1.5px var(--ink); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.daytabs { display: none; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 4px; }
+.daytab { flex: 0 0 auto; border: 2px solid var(--ink); background: var(--card); border-radius: 12px; padding: 6px 12px; font-family: var(--cond); font-weight: 700; text-transform: uppercase; cursor: pointer; min-width: 58px; line-height: 1.1; }
+.daytab small { display: block; font-weight: 500; color: var(--muted); }
+.daytab[aria-pressed="true"] { background: var(--yellow); }
+.sched { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
+.col { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.col h3 { margin: 0; font-family: var(--cond); font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: .04em; padding: 10px 12px; background: var(--card); border-radius: 12px; border: 2px solid var(--ink); display: flex; justify-content: space-between; gap: 6px; }
+.col.today h3 { background: var(--yellow); }
+.col h3 small { color: var(--muted); font-weight: 600; }
+.cls { background: var(--card); border-radius: 14px; padding: 12px; border: 2px solid transparent; cursor: pointer; text-align: left; display: grid; gap: 6px; position: relative; overflow: hidden; transition: transform .2s, border-color .2s; width: 100%; font: inherit; }
+.cls::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--c); }
+.cls:hover { transform: translateY(-3px); border-color: var(--ink); }
+.cls .t { font-family: var(--cond); font-weight: 700; font-size: .95rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cls .n { font-family: var(--display); font-weight: 800; font-size: 1.35rem; line-height: 1; text-transform: uppercase; }
+.cls .c { font-size: .82rem; color: var(--muted); }
+.cap { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.cap i { display: block; height: 100%; background: var(--ink); border-radius: 3px; }
+.cls .s { font-family: var(--cond); font-weight: 600; font-size: .88rem; text-transform: uppercase; }
+.cls.full .s { color: var(--red); }
+.cls.mine { border-color: var(--ink); background: var(--yellow); }
+.cls.mine .c, .cls.mine .t { color: var(--ink); }
+.cls.mine .cap { background: rgba(0,0,0,.15); }
+.cls.past { opacity: .4; pointer-events: none; }
+.cls.hide { display: none; }
+
+/* Calculator + pricing */
+.calc { background: var(--ink); color: var(--bg); border-radius: 28px; padding: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.calc h2 { color: var(--bg); font-size: clamp(2.4rem, 5vw, 4.2rem); }
+.calc h2 em { font-style: normal; color: var(--yellow); }
+.q { display: grid; gap: 12px; margin-top: 26px; }
+.q label, .q .lab { font-family: var(--cond); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #bdbcb6; }
+.days { display: flex; align-items: center; gap: 16px; }
+.days input { flex: 1; accent-color: var(--yellow); }
+.days output { font-family: var(--display); font-weight: 900; font-size: 3rem; line-height: 1; min-width: 2.2ch; text-align: right; color: var(--yellow); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.seg button { border: 2px solid #4a4944; background: transparent; color: var(--bg); padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: var(--cond); font-weight: 700; font-size: 1rem; text-transform: uppercase; }
+.seg button[aria-pressed="true"] { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
+.result { background: #1d1d1b; border-radius: 20px; padding: 28px; display: grid; gap: 10px; min-width: 0; }
+.result .lab { font-family: var(--cond); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #bdbcb6; }
+.result b { font-family: var(--display); font-weight: 900; font-size: 3.4rem; line-height: .9; text-transform: uppercase; color: var(--yellow); }
+.result p { margin: 0; color: #d6d5cf; }
+.result .per { font-family: var(--display); font-weight: 800; font-size: 1.8rem; color: var(--bg); }
+.kb { width: 70px; height: auto; transform-origin: 50% 8%; }
+@media (prefers-reduced-motion: no-preference) { .kb { animation: swing 1.8s ease-in-out infinite; } }
+@keyframes swing { 0%, 100% { transform: rotate(-24deg); } 50% { transform: rotate(24deg); } }
+
+.billing { display: inline-flex; align-items: center; gap: 12px; font-family: var(--cond); font-weight: 700; text-transform: uppercase; font-size: 1.05rem; }
+.switch { width: 58px; height: 32px; border-radius: 999px; background: var(--ink); border: 0; position: relative; cursor: pointer; padding: 0; }
+.switch::after { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--yellow); transition: transform .25s cubic-bezier(.2,1.3,.4,1); }
+.switch[aria-checked="true"]::after { transform: translateX(26px); }
+.save { background: var(--green); color: #fff; padding: 3px 10px; border-radius: 999px; font-size: .85rem; }
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 26px; }
+.plan { background: var(--card); border-radius: 24px; padding: 28px; display: grid; gap: 14px; align-content: start; border: 3px solid transparent; position: relative; transition: transform .3s, border-color .3s; min-width: 0; }
+.plan.rec { border-color: var(--ink); transform: translateY(-8px); }
+.plan .badge { position: absolute; top: -14px; left: 24px; background: var(--yellow); border: 2px solid var(--ink); border-radius: 999px; padding: 2px 12px; font-family: var(--cond); font-weight: 700; text-transform: uppercase; font-size: .88rem; opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s; }
+.plan.rec .badge { opacity: 1; transform: none; }
+.plan h3 { font-family: var(--display); font-weight: 900; font-size: 2.2rem; text-transform: uppercase; line-height: .9; margin: 0; }
+.plan .price { font-family: var(--display); font-weight: 900; font-size: 4rem; line-height: .85; font-variant-numeric: tabular-nums; }
+.plan .price small { font-family: var(--cond); font-size: 1.1rem; font-weight: 600; color: var(--muted); margin-left: 4px; }
+.plan .bill { font-size: .85rem; color: var(--muted); min-height: 1.3em; margin: 0; }
+.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.plan li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; font-size: .96rem; }
+.plan li::before { content: "✓"; font-weight: 700; }
+.plan li.no { color: #a3a29c; }
+.plan li.no::before { content: "–"; }
+.plan .btn { justify-content: center; margin-top: 6px; }
+
+/* Reveal */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal { animation: rv linear both; animation-timeline: view(); animation-range: entry 0% cover 25%; }
+    .plan { animation: pop linear both; animation-timeline: view(); animation-range: entry 0% cover 25%; }
+  }
+}
+@keyframes rv { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: none; } }
+@keyframes pop { from { opacity: 0; transform: translateY(80px) rotate(3deg); } to { opacity: 1; } }
+
+/* Modal & toast */
+.overlay { position: fixed; inset: 0; background: rgba(10,10,10,.55); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.overlay.on { opacity: 1; pointer-events: auto; }
+.modal { position: fixed; z-index: 50; left: 50%; top: 50%; width: min(460px, calc(100% - 32px)); background: var(--card); border-radius: 24px; padding: 28px; transform: translate(-50%, -44%) scale(.96); opacity: 0; pointer-events: none; transition: transform .3s cubic-bezier(.2,1.2,.4,1), opacity .2s; display: grid; gap: 14px; border-top: 10px solid var(--c, var(--yellow)); max-height: calc(100% - 32px); overflow: auto; }
+.modal.on { transform: translate(-50%, -50%); opacity: 1; pointer-events: auto; }
+.modal h3 { font-family: var(--display); font-weight: 900; font-size: 2.4rem; text-transform: uppercase; line-height: .9; margin: 0; }
+.mrow { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.mrow span:first-child { color: var(--muted); }
+.mrow span:last-child { font-weight: 600; text-align: right; }
+.mbtns { display: flex; gap: 10px; flex-wrap: wrap; }
+.mbtns .btn { flex: 1; justify-content: center; }
+.toast { position: fixed; z-index: 60; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, calc(100% + 60px)); visibility: hidden; background: var(--ink); color: var(--bg); padding: 12px 20px; border-radius: 999px; font-weight: 600; transition: transform .35s cubic-bezier(.2,1.3,.4,1), visibility 0s .35s; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+.toast.on { transform: translate(-50%, 0); visibility: visible; transition: transform .35s cubic-bezier(.2,1.3,.4,1); }
+
+footer { border-top: 2px solid var(--ink); padding-block: 26px; font-size: .88rem; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer a { color: var(--ink); font-weight: 600; }
+
+@media (max-width: 1000px) {
+  .sched { grid-template-columns: minmax(0, 1fr); }
+  .daytabs { display: flex; }
+  .col:not(.sel) { display: none; }
+  .col h3 { display: none; }
+  .col { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+}
+@media (max-width: 860px) {
+  .hero, .calc { grid-template-columns: 1fr; }
+  .lift { min-height: 340px; }
+  .plans { grid-template-columns: 1fr; }
+  .plan.rec { transform: none; }
+  .calc { padding: 28px; }
+}
+@media (max-width: 520px) {
+  .wrap { padding-inline: 16px; }
+  section { padding-block: 60px; }
+  .nav ul li:not(:last-child) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="demo">Proyecto de demostración · <b>gimnasio ficticio</b> · diseño y desarrollo de Ruben Medina · <a href="../" style="color:inherit;font-weight:600">← Volver al portafolio</a></div>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Principal">
+    <a class="logo" href="#top"><i aria-hidden="true"></i>Forja</a>
+    <ul>
+      <li><a href="#horario">Horario</a></li>
+      <li><a href="#plan">Tu plan</a></li>
+      <li><a href="#tarifas">Tarifas</a></li>
+      <li><a class="pill" href="#tarifas">Apúntate</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero" id="top">
+    <div>
+      <h1><span>Entrena</span><span>como</span><span class="hl"><em>quieras.</em></span></h1>
+      <p>Sala de pesas de 900 m², más de 60 clases a la semana y un estudio de yoga aparte, con luz natural y silencio. Abierto de 6:00 a 23:00.</p>
+      <div class="btns">
+        <a class="btn y" href="#horario">Ver el horario</a>
+        <a class="btn o" href="#plan">¿Qué plan me conviene?</a>
+      </div>
+    </div>
+    <div class="lift" aria-label="Animación de una persona levantando una barra">
+      <div class="rep">Repeticiones<b id="reps">0</b></div>
+      <span class="tag">Press militar</span>
+      <svg viewBox="0 0 220 260" aria-hidden="true">
+        <g fill="none" stroke="#0f0f0f" stroke-linecap="round" stroke-linejoin="round">
+          <!-- piernas -->
+          <path d="M98 150 L86 196 L88 236" stroke-width="20"/>
+          <path d="M122 150 L134 196 L132 236" stroke-width="20"/>
+          <path d="M76 238 H96 M124 238 H144" stroke-width="10"/>
+          <!-- brazos (animados) -->
+          <path stroke-width="15" d="M80 84 L62 112 L58 82">
+            <animate attributeName="d" dur="2.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.42;.58;1" keySplines=".4 0 .2 1;0 0 1 1;.4 0 .2 1" values="M80 84 L62 112 L58 82;M80 84 L60 50 L58 16;M80 84 L60 50 L58 16;M80 84 L62 112 L58 82"/>
+          </path>
+          <path stroke-width="15" d="M140 84 L158 112 L162 82">
+            <animate attributeName="d" dur="2.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.42;.58;1" keySplines=".4 0 .2 1;0 0 1 1;.4 0 .2 1" values="M140 84 L158 112 L162 82;M140 84 L160 50 L162 16;M140 84 L160 50 L162 16;M140 84 L158 112 L162 82"/>
+          </path>
+        </g>
+        <!-- torso en V y cabeza -->
+        <path d="M74 74 Q110 66 146 74 L132 150 Q110 156 88 150 Z" fill="#0f0f0f"/>
+        <circle cx="110" cy="50" r="15" fill="#0f0f0f"/>
+        <!-- barra con discos (animada) -->
+        <g>
+          <animateTransform attributeName="transform" type="translate" dur="2.4s" repeatCount="indefinite" calcMode="spline" keyTimes="0;.42;.58;1" keySplines=".4 0 .2 1;0 0 1 1;.4 0 .2 1" values="0 80;0 14;0 14;0 80"/>
+          <rect x="6" y="-3" width="208" height="6" rx="3" fill="#0f0f0f"/>
+          <rect x="10" y="-26" width="16" height="52" rx="4" fill="#e5372b" stroke="#0f0f0f" stroke-width="2.5"/>
+          <rect x="26" y="-18" width="10" height="36" rx="3" fill="#2457d6" stroke="#0f0f0f" stroke-width="2.5"/>
+          <rect x="194" y="-26" width="16" height="52" rx="4" fill="#e5372b" stroke="#0f0f0f" stroke-width="2.5"/>
+          <rect x="184" y="-18" width="10" height="36" rx="3" fill="#2457d6" stroke="#0f0f0f" stroke-width="2.5"/>
+        </g>
+      </svg>
+      <div class="floor" aria-hidden="true"></div>
+    </div>
+  </header>
+</div>
+
+<div class="marquee" aria-hidden="true"><div class="track" id="track"></div></div>
+
+<div class="load" id="load">
+  <div class="load-sticky">
+    <div class="wrap" style="width:100%">
+      <div class="load-top">
+        <div>
+          <span class="week" id="week">Semana 1</span>
+          <h2>Cada semana,<br>un poco más.</h2>
+        </div>
+        <div class="kg" aria-live="polite"><span id="kg">20</span><small>kg</small></div>
+      </div>
+      <svg class="barbell" viewBox="0 0 900 240" aria-label="Barra olímpica que se carga de discos al avanzar">
+        <rect x="40" y="112" width="820" height="16" rx="8" fill="#0f0f0f"/>
+        <rect x="200" y="104" width="18" height="32" rx="4" fill="#0f0f0f"/>
+        <rect x="682" y="104" width="18" height="32" rx="4" fill="#0f0f0f"/>
+        <g id="plates"></g>
+        <rect x="70" y="208" width="760" height="4" rx="2" fill="#d9d7d0"/>
+      </svg>
+      <div class="legend">
+        <span><i style="background:var(--red)"></i>Disco 25 kg</span>
+        <span><i style="background:var(--blue)"></i>Disco 20 kg</span>
+        <span><i style="background:var(--green)"></i>Disco 10 kg</span>
+        <span>Barra olímpica: 20 kg</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="horario">
+  <div class="wrap">
+    <div class="shead reveal">
+      <h2>Horario<br>de clases</h2>
+      <p>Pulsa una clase para reservar tu plaza. Las plazas se liberan si alguien cancela, así que vuelve a mirar las que están completas.</p>
+    </div>
+    <div class="types" id="types" role="group" aria-label="Filtrar por tipo de clase"></div>
+    <div class="daytabs" id="daytabs" role="group" aria-label="Día de la semana"></div>
+    <div class="sched" id="sched"></div>
+  </div>
+</section>
+
+<section id="plan" style="padding-top:0">
+  <div class="wrap">
+    <div class="calc reveal">
+      <div>
+        <svg class="kb" viewBox="0 0 70 90" aria-hidden="true"><path d="M22 30 Q22 6 35 6 Q48 6 48 30" fill="none" stroke="#ffcf26" stroke-width="7" stroke-linecap="round"/><path d="M10 54 Q10 28 35 28 Q60 28 60 54 Q60 84 35 84 Q10 84 10 54 Z" fill="#ffcf26"/><text x="35" y="66" text-anchor="middle" font-family="Big Shoulders Display, Impact, sans-serif" font-weight="900" font-size="18" fill="#0f0f0f">16</text></svg>
+        <h2>¿Qué plan<br>te <em>conviene</em>?</h2>
+        <div class="q">
+          <label for="days">¿Cuántos días por semana quieres entrenar?</label>
+          <div class="days"><input type="range" id="days" min="1" max="7" value="3"><output id="daysOut" for="days">3</output></div>
+        </div>
+        <div class="q">
+          <span class="lab">¿Qué te gusta más?</span>
+          <div class="seg" id="pref" role="group" aria-label="Preferencia">
+            <button type="button" data-p="sala" aria-pressed="false">Sala de pesas</button>
+            <button type="button" data-p="clases" aria-pressed="false">Clases dirigidas</button>
+            <button type="button" data-p="ambos" aria-pressed="true">Las dos cosas</button>
+          </div>
+        </div>
+      </div>
+      <div class="result" aria-live="polite">
+        <span class="lab">Te recomendamos</span>
+        <b id="recName">Total</b>
+        <p id="recWhy"></p>
+        <span class="lab" style="margin-top:8px">Te sale cada entrenamiento a</span>
+        <span class="per" id="perSession">3,49 €</span>
+        <a class="btn y" href="#tarifas" style="justify-self:start;margin-top:8px">Ver el plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tarifas" style="padding-top:0">
+  <div class="wrap">
+    <div class="shead reveal">
+      <h2>Tarifas</h2>
+      <div class="billing">Mensual <button class="switch" id="billing" type="button" role="switch" aria-checked="false" aria-label="Pago anual"></button> Anual <span class="save">−20 %</span></div>
+    </div>
+    <div class="plans" id="plans"></div>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:22px">Sin matrícula. Sin permanencia en el plan mensual. Primera clase de prueba gratis.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Forja es un gimnasio ficticio creado como demostración.</span>
+    <span>Diseño y desarrollo: <a href="https://github.com/Rubenj0806" target="_blank" rel="noopener">Ruben Medina</a></span>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Contador de repeticiones sincronizado con la animación (2,4 s por rep)
+  if (!reduced) { var reps = 0; setInterval(function () { reps = (reps % 12) + 1; $("reps").textContent = reps; }, 2400); }
+  else $("reps").textContent = "12";
+
+  // Marquee
+  var names = ["Fuerza", "HIIT", "Yoga", "Spinning", "Movilidad", "Halterofilia", "Pilates", "Boxeo"];
+  var h = names.map(function (n) { return "<span>" + n + "</span>"; }).join("");
+  $("track").innerHTML = h + h;
+
+  // ---------- Barra que se carga ----------
+  // Por lado, desde dentro hacia fuera: 25, 25, 20, 20, 10 (rojo, rojo, azul, azul, verde)
+  var PL = [{ kg: 25, c: "#e5372b", h: 180, w: 26 }, { kg: 25, c: "#e5372b", h: 180, w: 26 }, { kg: 20, c: "#2457d6", h: 180, w: 22 }, { kg: 20, c: "#2457d6", h: 180, w: 22 }, { kg: 10, c: "#22a05a", h: 150, w: 16 }];
+  var svgP = "", xL = 196, xR = 704;
+  PL.forEach(function (p, i) {
+    xL -= p.w + 3; var y = 120 - p.h / 2;
+    svgP += '<rect class="plate" data-i="' + i + '" data-side="-1" x="' + xL + '" y="' + y + '" width="' + p.w + '" height="' + p.h + '" rx="6" fill="' + p.c + '" stroke="#0f0f0f" stroke-width="3"/>';
+    svgP += '<rect class="plate" data-i="' + i + '" data-side="1" x="' + xR + '" y="' + y + '" width="' + p.w + '" height="' + p.h + '" rx="6" fill="' + p.c + '" stroke="#0f0f0f" stroke-width="3"/>';
+    xR += p.w + 3;
+  });
+  $("plates").innerHTML = svgP;
+  var plates = Array.prototype.slice.call(document.querySelectorAll(".plate"));
+  var lastStep = -1;
+  function onScroll() {
+    var el = $("load"), r = el.getBoundingClientRect();
+    var total = el.offsetHeight - window.innerHeight;
+    var p = Math.min(1, Math.max(0, -r.top / (total || 1)));
+    if (reduced) p = 1;
+    var step = Math.round(p * PL.length);
+    if (step === lastStep) return; lastStep = step;
+    var kg = 20;
+    plates.forEach(function (pl) {
+      var i = +pl.dataset.i, on = i < step, side = +pl.dataset.side;
+      pl.style.transform = on ? "none" : "translateX(" + side * 260 + "px)";
+      pl.style.opacity = on ? 1 : 0;
+      if (on) kg += PL[i].kg;
+    });
+    $("kg").textContent = kg;
+    $("week").textContent = "Semana " + (1 + step * 2);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+
+  // ---------- Horario ----------
+  var TYPES = { "Fuerza": "#ffcf26", "HIIT": "#e5372b", "Yoga": "#22a05a", "Spinning": "#2457d6", "Movilidad": "#b07be0" };
+  var COACH = { "Fuerza": ["Álex", "Nerea"], "HIIT": ["Sara", "Iván"], "Yoga": ["Carmen", "Leire"], "Spinning": ["Pablo", "Iván"], "Movilidad": ["Leire", "Nerea"] };
+  var DUR = { "Fuerza": 60, "HIIT": 45, "Yoga": 75, "Spinning": 45, "Movilidad": 50 };
+  var CAP = { "Fuerza": 14, "HIIT": 20, "Yoga": 16, "Spinning": 24, "Movilidad": 14 };
+  var DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  var PLAN = [
+    [["07:00", "HIIT"], ["09:30", "Yoga"], ["13:30", "Spinning"], ["18:00", "Fuerza"], ["19:15", "HIIT"], ["20:30", "Yoga"]],
+    [["07:00", "Spinning"], ["09:30", "Movilidad"], ["13:30", "Fuerza"], ["18:00", "Spinning"], ["19:15", "Fuerza"], ["20:30", "Movilidad"]],
+    [["07:00", "HIIT"], ["09:30", "Yoga"], ["13:30", "HIIT"], ["18:00", "Fuerza"], ["19:15", "Spinning"], ["20:30", "Yoga"]],
+    [["07:00", "Spinning"], ["09:30", "Fuerza"], ["13:30", "Movilidad"], ["18:00", "HIIT"], ["19:15", "Fuerza"], ["20:30", "Yoga"]],
+    [["07:00", "HIIT"], ["09:30", "Yoga"], ["13:30", "Spinning"], ["18:00", "Fuerza"], ["19:15", "HIIT"]],
+    [["10:00", "Fuerza"], ["11:15", "Spinning"], ["12:30", "Yoga"]],
+    [["10:00", "Yoga"], ["11:30", "Movilidad"]]
+  ];
+  // Muestra siempre los próximos 7 días empezando por hoy
+  var now = new Date(), todayIdx = 0;
+  var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function wd(d) { return (dateOf(d).getDay() + 6) % 7; }
+  var classes = [];
+  [0, 1, 2, 3, 4, 5, 6].forEach(function (d) {
+    PLAN[wd(d)].forEach(function (it, k) {
+      var t = it[1], seed = (d * 7 + k * 13 + t.length * 5) % 11;
+      var cap = CAP[t], taken = Math.min(cap, Math.round(cap * (.35 + seed / 14)));
+      if ((d + k) % 5 === 0) taken = cap;
+      classes.push({ id: d + "-" + k, d: d, time: it[0], type: t, coach: COACH[t][(d + k) % 2], cap: cap, taken: taken, mine: false });
+    });
+  });
+  var filter = "Todas", selDay = todayIdx;
+  function isPast(c) {
+    if (c.d < todayIdx) return true;
+    if (c.d > todayIdx) return false;
+    var hm = c.time.split(":"); return (+hm[0] * 60 + +hm[1]) <= now.getHours() * 60 + now.getMinutes();
+  }
+  function dateOf(d) { var x = new Date(monday); x.setDate(monday.getDate() + d); return x; }
+  function renderTypes() {
+    var html = '<button type="button" class="chip" data-f="Todas" aria-pressed="' + (filter === "Todas") + '">Todas</button>';
+    Object.keys(TYPES).forEach(function (t) { html += '<button type="button" class="chip" data-f="' + t + '" aria-pressed="' + (filter === t) + '" style="--c:' + TYPES[t] + '"><i></i>' + t + "</button>"; });
+    $("types").innerHTML = html;
+  }
+  function renderTabs() {
+    $("daytabs").innerHTML = DAYS.map(function (n, d) { return '<button type="button" class="daytab" data-d="' + d + '" aria-pressed="' + (d === selDay) + '">' + (d === todayIdx ? "Hoy" : DAYS[wd(d)]) + "<small>" + dateOf(d).getDate() + "</small></button>"; }).join("");
+  }
+  function clsHTML(c) {
+    var left = c.cap - c.taken, full = left <= 0 && !c.mine, past = isPast(c);
+    var status = past ? "Finalizada" : c.mine ? "✓ Tienes plaza" : full ? "Completa · lista de espera" : left + (left === 1 ? " plaza libre" : " plazas libres");
+    return '<button type="button" class="cls' + (full ? " full" : "") + (c.mine ? " mine" : "") + (past ? " past" : "") + (filter !== "Todas" && filter !== c.type ? " hide" : "") + '" data-id="' + c.id + '" style="--c:' + TYPES[c.type] + '"><span class="t">' + c.time + " · " + DUR[c.type] + ' min</span><span class="n">' + c.type + '</span><span class="c">con ' + c.coach + '</span><span class="cap"><i style="width:' + Math.min(100, c.taken / c.cap * 100) + '%"></i></span><span class="s">' + status + "</span></button>";
+  }
+  function renderSched() {
+    var html = "";
+    for (var d = 0; d < 7; d++) {
+      var dt = dateOf(d);
+      html += '<div class="col' + (d === todayIdx ? " today" : "") + (d === selDay ? " sel" : "") + '"><h3>' + (d === todayIdx ? "Hoy" : DAYS[wd(d)]) + " <small>" + dt.getDate() + "</small></h3>" + classes.filter(function (c) { return c.d === d; }).map(clsHTML).join("") + "</div>";
+    }
+    $("sched").innerHTML = html;
+  }
+  $("types").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (!b) return; filter = b.dataset.f; renderTypes(); renderSched(); });
+  $("daytabs").addEventListener("click", function (e) { var b = e.target.closest(".daytab"); if (!b) return; selDay = +b.dataset.d; renderTabs(); renderSched(); });
+  $("sched").addEventListener("click", function (e) { var b = e.target.closest(".cls"); if (b) openClass(b.dataset.id); });
+
+  // Modal de reserva
+  var cur = null, lastFocus = null;
+  function byId(id) { return classes.find(function (c) { return c.id === id; }); }
+  function openClass(id) {
+    cur = byId(id); lastFocus = document.activeElement; renderModal();
+    $("overlay").classList.add("on"); $("modal").classList.add("on"); document.body.classList.add("locked");
+    setTimeout(function () { var f = $("modal").querySelector(".btn"); if (f) f.focus(); }, 60);
+  }
+  function closeModal() { $("overlay").classList.remove("on"); $("modal").classList.remove("on"); document.body.classList.remove("locked"); if (lastFocus) lastFocus.focus(); }
+  function renderModal() {
+    var c = cur, left = c.cap - c.taken, dt = dateOf(c.d);
+    var day = c.d === 0 ? "hoy" : ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"][wd(c.d)];
+    var main = c.mine ? '<button class="btn o" type="button" data-act="cancel">Cancelar mi plaza</button>' : left > 0 ? '<button class="btn y" type="button" data-act="book">Reservar plaza</button>' : '<button class="btn y" type="button" data-act="wait">Apuntarme a la lista de espera</button>';
+    $("modal").style.setProperty("--c", TYPES[c.type]);
+    $("modal").innerHTML = '<span class="week">' + day.charAt(0).toUpperCase() + day.slice(1) + " " + dt.getDate() + " · " + c.time + '</span><h3 id="mTitle">' + c.type + '</h3>' +
+      '<div class="mrow"><span>Monitor/a</span><span>' + c.coach + '</span></div><div class="mrow"><span>Duración</span><span>' + DUR[c.type] + ' minutos</span></div><div class="mrow"><span>Plazas</span><span>' + Math.max(0, left) + " de " + c.cap + ' libres</span></div><div class="mrow"><span>Sala</span><span>' + (c.type === "Yoga" || c.type === "Movilidad" ? "Estudio de yoga" : c.type === "Spinning" ? "Sala ciclo" : "Sala principal") + "</span></div>" +
+      '<div class="mbtns">' + main + '<button class="btn o" type="button" data-act="close">Cerrar</button></div>';
+  }
+  $("modal").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (!b) return;
+    var a = b.dataset.act;
+    if (a === "close") return closeModal();
+    if (a === "book") { cur.taken++; cur.mine = true; toast("Plaza reservada: " + cur.type + " a las " + cur.time); }
+    if (a === "cancel") { cur.taken--; cur.mine = false; toast("Has cancelado tu plaza. Queda libre para otra persona."); }
+    if (a === "wait") toast("Te avisaríamos por SMS si se libera una plaza (demo).");
+    renderSched(); closeModal();
+  });
+  $("overlay").addEventListener("click", closeModal);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("modal").classList.contains("on")) closeModal(); });
+
+  // ---------- Planes ----------
+  var PLANS = [
+    { id: "libre", n: "Libre", p: 29, f: ["Sala de pesas sin límite", "Vestuarios y taquilla", "Plan de entrenamiento inicial"], no: ["Clases dirigidas", "Estudio de yoga"] },
+    { id: "total", n: "Total", p: 45, f: ["Sala de pesas sin límite", "Todas las clases dirigidas", "Estudio de yoga", "Revisión mensual con entrenador"], no: [] },
+    { id: "clases", n: "Clases 8", p: 35, f: ["8 clases al mes (2 por semana)", "Estudio de yoga", "Vestuarios y taquilla"], no: ["Sala de pesas"] }
+  ];
+  var annual = false, rec = "total";
+  function price(p) { return annual ? Math.round(p.p * .8 * 100) / 100 : p.p; }
+  function eur(n) { return (Math.round(n * 100) / 100).toFixed(2).replace(".", ",").replace(",00", "") + " €"; }
+  function renderPlans() {
+    $("plans").innerHTML = PLANS.map(function (p) {
+      return '<div class="plan' + (p.id === rec ? " rec" : "") + '"><span class="badge">Tu plan recomendado</span><h3>' + p.n + '</h3><div class="price">' + eur(price(p)).replace(" €", "") + "<small>€/mes</small></div>" +
+        '<p class="bill">' + (annual ? "Pagas " + eur(price(p) * 12) + " al año" : "Sin permanencia") + "</p><ul>" + p.f.map(function (x) { return "<li>" + x + "</li>"; }).join("") + p.no.map(function (x) { return '<li class="no">' + x + "</li>"; }).join("") + '</ul><button class="btn' + (p.id === rec ? " y" : "") + '" type="button" data-plan="' + p.n + '">Elegir ' + p.n + "</button></div>";
+    }).join("");
+  }
+  $("billing").addEventListener("click", function () { annual = !annual; this.setAttribute("aria-checked", annual); renderPlans(); calc(); });
+  $("plans").addEventListener("click", function (e) { var b = e.target.closest("[data-plan]"); if (b) toast("Has elegido el plan " + b.dataset.plan + ". En una web real seguiría el alta (demo)."); });
+
+  // ---------- Calculadora ----------
+  var pref = "ambos";
+  function calc() {
+    var d = +$("days").value; $("daysOut").textContent = d;
+    rec = pref === "sala" ? "libre" : pref === "clases" ? (d <= 2 ? "clases" : "total") : "total";
+    var p = PLANS.find(function (x) { return x.id === rec; });
+    var why = rec === "libre" ? "Tienes la sala de pesas a tu disposición todos los días, sin pagar por clases que no vas a usar." :
+      rec === "clases" ? "Con " + d + (d === 1 ? " día" : " días") + " a la semana te basta con 8 clases al mes, y es el plan más barato para ti." :
+      pref === "clases" ? "Con " + d + " días de clases a la semana te compensa tenerlas ilimitadas." : "Combinas pesas y clases, así que te conviene tenerlo todo incluido.";
+    var sessions = rec === "clases" ? Math.min(d * 4.3, 8) : d * 4.3;
+    $("recName").textContent = p.n; $("recWhy").textContent = why;
+    $("perSession").textContent = eur(price(p) / sessions);
+    renderPlans();
+  }
+  $("days").addEventListener("input", calc);
+  $("pref").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; pref = b.dataset.p; $("pref").querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); calc(); });
+
+  var tt;
+  function toast(m) { var t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(function () { t.classList.remove("on"); }, 2600); }
+
+  renderTypes(); renderTabs(); renderSched(); calc();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Mirador Fincas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: inmobiliaria seria y de confianza — buscador arriba, filtros en columna lateral, resultados en rejilla, ficha completa en capa superior. Azul pizarra como acento, neutros fríos. Sin animaciones llamativas. */
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --ink: #1b2330;
+  --muted: #5d6675;
+  --line: #dde1e7;
+  --accent: #23466e;
+  --accent-soft: #e5ecf5;
+  --good: #1f7a4d;
+  --warn: #b5541c;
+  --heart: #c2364a;
+  --on-accent: #ffffff;
+  --hero: #23466e;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --surface: #1a2028; --ink: #e8ebf0; --muted: #9aa3b2; --line: #2c3440;
+    --accent: #8db3e2; --accent-soft: #1f2d40; --good: #5cc28f; --warn: #e59a6a; --heart: #f07a8c; --on-accent: #0f1a28; --hero: #1c2c42; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c; --surface: #1a2028; --ink: #e8ebf0; --muted: #9aa3b2; --line: #2c3440;
+  --accent: #8db3e2; --accent-soft: #1f2d40; --good: #5cc28f; --warn: #e59a6a; --heart: #f07a8c; --on-accent: #0f1a28; --hero: #1c2c42; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+body.locked { overflow: hidden; }
+
+.demo { background: var(--ink); color: var(--bg); font-size: .78rem; text-align: center; padding: 7px 16px; opacity: .92; }
+
+/* Header */
+.header { background: var(--surface); border-bottom: 1px solid var(--line); }
+.hbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+.logo { font-family: var(--serif); font-weight: 600; font-size: 1.35rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; }
+.logo svg { width: 28px; height: 28px; }
+.hnav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.hnav a { text-decoration: none; color: var(--muted); font-weight: 500; }
+.hnav a:hover { color: var(--ink); }
+.favbtn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-weight: 600; }
+.favbtn[aria-pressed="true"] { border-color: var(--heart); color: var(--heart); }
+.favbtn svg { width: 16px; height: 16px; }
+
+/* Hero search */
+.hero { background: var(--hero); color: #fff; padding-block: 44px 52px; }
+.hero h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
+.hero p { margin: 0 0 24px; opacity: .85; }
+.search { background: var(--surface); color: var(--ink); border-radius: 12px; padding: 10px; display: grid; grid-template-columns: auto minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: stretch; box-shadow: 0 16px 40px -20px rgba(0,0,0,.4); }
+.optoggle { display: inline-flex; background: var(--bg); border-radius: 8px; padding: 3px; }
+.optoggle button { border: 0; background: transparent; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.optoggle button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.sfield { display: grid; gap: 2px; padding: 4px 10px; border-left: 1px solid var(--line); min-width: 0; }
+.sfield label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+select option { background-color: var(--surface); color: var(--ink); }
+.sfield select { border: 0; background-color: var(--surface); padding: 2px 0; font-weight: 600; width: 100%; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: var(--on-accent); border: 0; border-radius: 8px; padding: 12px 20px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+
+/* Layout */
+.main { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px; padding-block: 32px 64px; align-items: start; }
+.filters { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 20px; position: sticky; top: 16px; }
+.fgroup { display: grid; gap: 8px; }
+.fgroup h3 { margin: 0; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+.range2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.range2 input, .fgroup select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.steps { display: flex; gap: 6px; flex-wrap: wrap; }
+.steps button { min-width: 42px; padding: 7px 10px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; cursor: pointer; font-weight: 600; }
+.steps button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.check { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+.check input { width: 17px; height: 17px; accent-color: var(--accent); }
+.clear { background: none; border: 0; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 0; justify-self: start; font-weight: 600; }
+
+.rhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.rhead h2 { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 1.4rem; }
+.rhead select { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.mfilters { display: none; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: box-shadow .2s, border-color .2s; min-width: 0; position: relative; }
+.card:hover { box-shadow: 0 10px 30px -18px rgba(20,30,50,.45); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.thumb { aspect-ratio: 4 / 3; max-width: 100%; position: relative; background: var(--bg); }
+.thumb svg { width: 100%; height: 100%; display: block; }
+.badges { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { background: var(--surface); color: var(--ink); font-size: .74rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.badge.drop { color: var(--good); }
+.heart { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--surface); display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.18); }
+.heart svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 2; }
+.heart[aria-pressed="true"] svg { fill: var(--heart); stroke: var(--heart); }
+.cbody { padding: 14px 16px 16px; display: grid; gap: 6px; }
+.price { font-weight: 700; font-size: 1.35rem; font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.price small { font-weight: 500; font-size: .82rem; color: var(--muted); }
+.price s { font-weight: 500; font-size: .9rem; color: var(--muted); }
+.ctitle { margin: 0; font-weight: 600; font-size: 1rem; }
+.zone { color: var(--muted); font-size: .9rem; margin: 0; }
+.facts { display: flex; gap: 14px; flex-wrap: wrap; font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.facts b { color: var(--ink); font-weight: 600; }
+.empty { grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; }
+
+/* Detail */
+.overlay { position: fixed; inset: 0; background: rgba(10,14,20,.55); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.overlay.on { opacity: 1; pointer-events: auto; }
+.detail { position: fixed; z-index: 50; inset: 24px; max-width: 1100px; margin: 0 auto; background: var(--bg); border-radius: 14px; overflow: auto; opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .2s, transform .2s; }
+.detail.on { opacity: 1; pointer-events: auto; transform: none; }
+.dtop { position: sticky; top: 0; z-index: 2; background: var(--surface); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 20px; }
+.dtop .ref { color: var(--muted); font-size: .88rem; }
+.dact { display: flex; gap: 8px; }
+.ibtn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.ibtn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+.ibtn[aria-pressed="true"] { color: var(--heart); border-color: var(--heart); }
+.ibtn[aria-pressed="true"] svg { fill: var(--heart); stroke: var(--heart); }
+.dbody { padding: 20px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.gallery { display: grid; gap: 10px; min-width: 0; }
+.gmain { position: relative; aspect-ratio: 16 / 10; max-width: 100%; border-radius: 12px; overflow: hidden; background: var(--surface); }
+.gmain svg { width: 100%; height: 100%; display: block; }
+.gnav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,.2); cursor: pointer; font-size: 1.2rem; }
+.gnav.prev { left: 12px; } .gnav.next { right: 12px; }
+.gcount { position: absolute; bottom: 10px; right: 12px; background: rgba(0,0,0,.6); color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: 6px; }
+.gcap { position: absolute; bottom: 10px; left: 12px; background: rgba(0,0,0,.6); color: #fff; font-size: .8rem; padding: 3px 8px; border-radius: 6px; }
+.gthumbs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.gthumbs button { padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; aspect-ratio: 4 / 3; background: var(--surface); max-width: 100%; }
+.gthumbs button[aria-current="true"] { border-color: var(--accent); }
+.gthumbs svg { width: 100%; height: 100%; display: block; }
+.note { font-size: .8rem; color: var(--muted); margin: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.panel h2 { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 1.55rem; line-height: 1.2; }
+.panel h3 { margin: 0; font-size: 1.05rem; }
+.kv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.kv div { background: var(--bg); border-radius: 8px; padding: 10px; min-width: 0; }
+.kv small { display: block; color: var(--muted); font-size: .76rem; }
+.kv b { font-variant-numeric: tabular-nums; }
+.extras { display: flex; gap: 8px; flex-wrap: wrap; }
+.extras span { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: .86rem; }
+.desc p { margin: 0 0 10px; color: var(--muted); }
+.energy { display: grid; gap: 4px; }
+.erow { display: grid; grid-template-columns: 1fr 60px; gap: 8px; align-items: center; }
+.ebar { height: 20px; color: #fff; font-size: .78rem; font-weight: 700; display: flex; align-items: center; padding-left: 8px; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%); }
+.emark { font-size: .8rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.emark::before { content: ""; border: 7px solid transparent; border-right-color: var(--ink); }
+.calc { display: grid; gap: 12px; }
+.cfield { display: grid; gap: 4px; }
+.cfield label { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); }
+.cfield label b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.cfield input[type="range"] { width: 100%; accent-color: var(--accent); }
+.quota { background: var(--accent-soft); border-radius: 10px; padding: 14px; display: grid; gap: 4px; }
+.quota b { font-size: 1.8rem; font-variant-numeric: tabular-nums; color: var(--accent); }
+.qrow { display: flex; justify-content: space-between; font-size: .88rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+.slots button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 4px; cursor: pointer; font-size: .86rem; line-height: 1.25; }
+.slots button small { display: block; color: var(--muted); }
+.slots button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.slots button[aria-pressed="true"] small { color: var(--on-accent); }
+.vfields { display: grid; gap: 8px; }
+.vfields input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.err { color: var(--warn); font-size: .86rem; margin: 0; min-height: 1em; }
+.ok { background: color-mix(in srgb, var(--good) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--good) 40%, var(--line)); border-radius: 10px; padding: 14px; }
+.ok b { color: var(--good); }
+.ok p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+
+footer { border-top: 1px solid var(--line); background: var(--surface); padding-block: 22px; font-size: .86rem; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer a { color: var(--accent); }
+
+@media (max-width: 980px) {
+  .search { grid-template-columns: 1fr 1fr; }
+  .optoggle { grid-column: 1 / -1; justify-self: start; }
+  .sfield { border-left: 0; border: 1px solid var(--line); border-radius: 8px; }
+  .search .btn { grid-column: 1 / -1; }
+  .main { grid-template-columns: 1fr; }
+  .filters { position: static; display: none; }
+  .filters.open { display: grid; }
+  .mfilters { display: inline-flex; }
+  .dbody { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .wrap { padding-inline: 16px; }
+  .search { grid-template-columns: 1fr; }
+  .detail { inset: 0; border-radius: 0; }
+  .kv { grid-template-columns: 1fr 1fr; }
+  .hnav a { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="demo">Proyecto de demostración · inmobiliaria ficticia, los inmuebles no existen · diseño y desarrollo de Ruben Medina · <a href="../" style="color:inherit;font-weight:600">← Volver al portafolio</a></div>
+
+<header class="header">
+  <div class="wrap hbar">
+    <a class="logo" href="#top">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="6" fill="var(--accent)"/><path d="M6 20 L14 9 L22 20 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="12" y="15" width="4" height="5" fill="#fff"/></svg>
+      Mirador Fincas
+    </a>
+    <nav class="hnav" aria-label="Principal">
+      <a href="#resultados">Comprar</a>
+      <a href="#resultados">Alquilar</a>
+      <a href="#resultados">Vender tu casa</a>
+      <button class="favbtn" id="favBtn" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z" fill="currentColor"/></svg>Favoritos <span id="favCount">0</span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <h1>Encuentra tu próxima casa</h1>
+    <p>Pisos, áticos y casas revisados uno a uno por nuestro equipo. Sin comisiones ocultas.</p>
+    <form class="search" id="search" novalidate>
+      <div class="optoggle" role="group" aria-label="Operación">
+        <button type="button" data-op="venta" aria-pressed="true">Comprar</button>
+        <button type="button" data-op="alquiler" aria-pressed="false">Alquilar</button>
+      </div>
+      <div class="sfield"><label for="sZone">Zona</label><select id="sZone"><option value="">Todas las zonas</option></select></div>
+      <div class="sfield"><label for="sMax">Precio máximo</label><select id="sMax"></select></div>
+      <div class="sfield"><label for="sRooms">Habitaciones</label><select id="sRooms"><option value="0">Indiferente</option><option value="1">1 o más</option><option value="2">2 o más</option><option value="3">3 o más</option><option value="4">4 o más</option></select></div>
+      <button class="btn" type="submit">Buscar</button>
+    </form>
+  </div>
+</section>
+
+<div class="wrap main" id="resultados">
+  <aside class="filters" id="filters" aria-label="Filtros">
+    <div class="fgroup">
+      <h3>Precio</h3>
+      <div class="range2"><input id="fMin" type="number" inputmode="numeric" placeholder="Mínimo" aria-label="Precio mínimo"><input id="fMax" type="number" inputmode="numeric" placeholder="Máximo" aria-label="Precio máximo"></div>
+    </div>
+    <div class="fgroup">
+      <h3>Habitaciones</h3>
+      <div class="steps" id="fRooms" role="group" aria-label="Habitaciones mínimas"></div>
+    </div>
+    <div class="fgroup">
+      <h3>Baños</h3>
+      <div class="steps" id="fBaths" role="group" aria-label="Baños mínimos"></div>
+    </div>
+    <div class="fgroup">
+      <h3>Superficie mínima</h3>
+      <select id="fArea" aria-label="Superficie mínima"><option value="0">Indiferente</option><option value="50">50 m²</option><option value="70">70 m²</option><option value="90">90 m²</option><option value="120">120 m²</option></select>
+    </div>
+    <div class="fgroup">
+      <h3>Tipo</h3>
+      <select id="fType" aria-label="Tipo de inmueble"><option value="">Todos</option><option>Piso</option><option>Ático</option><option>Casa</option><option>Estudio</option><option>Dúplex</option></select>
+    </div>
+    <div class="fgroup" id="fExtras">
+      <h3>Características</h3>
+    </div>
+    <button class="clear" type="button" id="clearAll">Quitar todos los filtros</button>
+  </aside>
+
+  <div>
+    <div class="rhead">
+      <h2 id="rTitle">Viviendas en venta</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost mfilters" type="button" id="toggleFilters" aria-expanded="false" aria-controls="filters">Filtros</button>
+        <select id="sort" aria-label="Ordenar">
+          <option value="rel">Más relevantes</option>
+          <option value="new">Más recientes</option>
+          <option value="asc">Precio más bajo</option>
+          <option value="desc">Precio más alto</option>
+          <option value="m2">Precio por m² más bajo</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>Mirador Fincas es una inmobiliaria ficticia. Imágenes ilustrativas generadas con código.</span>
+    <span>Diseño y desarrollo: <a href="https://github.com/Rubenj0806" target="_blank" rel="noopener">Ruben Medina</a></span>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="dTitle"></div>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function n(x) { return Math.round(x).toLocaleString("es-ES"); }
+  function eur(x) { return n(x) + " €"; }
+
+  // ---------- Ilustraciones (generadas con SVG) ----------
+  function scene(kind, c) {
+    var s = '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
+    var sky = '<defs><linearGradient id="sk' + c.k + kind + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c.sky + '"/><stop offset="1" stop-color="#eef3f7"/></linearGradient></defs>';
+    s += sky;
+    if (kind === "fachada") {
+      s += '<rect width="400" height="300" fill="url(#sk' + c.k + kind + ')"/>';
+      s += '<rect x="0" y="262" width="400" height="38" fill="#c9cdd2"/>';
+      var bw = c.tall ? 180 : 230, bh = c.tall ? 210 : 150, bx = 200 - bw / 2, by = 262 - bh;
+      if (c.house) s += '<path d="M' + (bx - 12) + " " + by + " L200 " + (by - 60) + " L" + (bx + bw + 12) + " " + by + ' Z" fill="' + c.roof + '"/>';
+      s += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" fill="' + c.wall + '"/>';
+      var rows = Math.floor((bh - 30) / 38), cols = Math.floor(bw / 44);
+      for (var r = 0; r < rows; r++) for (var k = 0; k < cols; k++) {
+        var wx = bx + 14 + k * ((bw - 28) / cols) + 4, wy = by + 14 + r * 38;
+        s += '<rect x="' + wx + '" y="' + wy + '" width="' + ((bw - 28) / cols - 12) + '" height="24" fill="#5f7c93" opacity=".85"/>';
+        if (!c.house && r < rows - 1) s += '<rect x="' + (wx - 3) + '" y="' + (wy + 24) + '" width="' + ((bw - 28) / cols - 6) + '" height="4" fill="' + c.accent + '"/>';
+      }
+      s += '<rect x="186" y="' + (262 - 34) + '" width="28" height="34" fill="' + c.accent + '"/>';
+      s += '<circle cx="' + (bx - 30) + '" cy="226" r="26" fill="#6f9a6a"/><rect x="' + (bx - 33) + '" y="240" width="6" height="22" fill="#6b5844"/>';
+    } else if (kind === "vistas") {
+      s += '<rect width="400" height="300" fill="url(#sk' + c.k + kind + ')"/>';
+      s += '<rect y="150" width="400" height="80" fill="#5e8fb0"/><rect y="146" width="400" height="6" fill="#87afc9"/>';
+      s += '<path d="M0 150 Q60 120 120 150 Z" fill="#7c9a86"/>';
+      s += '<rect y="230" width="400" height="70" fill="' + c.floor + '"/>';
+      for (var i = 0; i < 400; i += 28) s += '<rect x="' + i + '" y="196" width="4" height="40" fill="#4a5560"/>';
+      s += '<rect y="194" width="400" height="5" fill="#4a5560"/>';
+      s += '<rect x="250" y="246" width="90" height="10" rx="3" fill="' + c.accent + '"/><rect x="258" y="256" width="4" height="30" fill="#4a5560"/><rect x="328" y="256" width="4" height="30" fill="#4a5560"/>';
+    } else {
+      s += '<rect width="400" height="210" fill="' + c.wall + '"/>';
+      s += '<rect y="210" width="400" height="90" fill="' + c.floor + '"/>';
+      for (var j = 0; j < 400; j += 36) s += '<path d="M' + j + ' 210 L' + (j - 60) + ' 300" stroke="rgba(0,0,0,.08)" stroke-width="2"/>';
+      s += '<rect x="30" y="40" width="130" height="120" fill="url(#sk' + c.k + kind + ')" stroke="#fff" stroke-width="8"/><path d="M95 40 V160 M30 100 H160" stroke="#fff" stroke-width="5"/>';
+      if (kind === "salon") {
+        s += '<rect x="190" y="150" width="180" height="62" rx="12" fill="' + c.accent + '"/><rect x="200" y="128" width="160" height="34" rx="10" fill="' + c.accent + '" opacity=".85"/>';
+        s += '<ellipse cx="270" cy="262" rx="120" ry="20" fill="rgba(0,0,0,.08)"/><rect x="235" y="232" width="70" height="8" rx="3" fill="#6b5844"/>';
+        s += '<rect x="372" y="90" width="4" height="120" fill="#4a5560"/><path d="M356 90 h36 l-8 -22 h-20 z" fill="#f2d9a6"/>';
+        s += '<rect x="214" y="60" width="70" height="46" fill="#fff" opacity=".7"/><rect x="220" y="66" width="58" height="34" fill="' + c.sky + '" opacity=".6"/>';
+      } else if (kind === "cocina") {
+        s += '<rect x="180" y="150" width="220" height="62" fill="#e9ecef"/><rect x="180" y="146" width="220" height="8" fill="#9aa3ad"/>';
+        for (var q = 0; q < 4; q++) s += '<rect x="' + (186 + q * 54) + '" y="160" width="48" height="46" fill="' + c.accent + '" opacity=".9"/><rect x="' + (205 + q * 54) + '" y="168" width="10" height="3" fill="#fff"/>';
+        for (var w = 0; w < 3; w++) s += '<rect x="' + (192 + w * 70) + '" y="40" width="62" height="60" fill="' + c.accent + '" opacity=".75"/>';
+        s += '<rect x="250" y="128" width="40" height="18" rx="3" fill="#bfc6cd"/>';
+      } else if (kind === "dormitorio") {
+        s += '<rect x="196" y="110" width="180" height="40" rx="6" fill="#6b5844"/><rect x="190" y="150" width="192" height="68" rx="8" fill="#f4f4f2"/><rect x="190" y="172" width="192" height="46" rx="6" fill="' + c.accent + '"/>';
+        s += '<rect x="206" y="138" width="60" height="24" rx="8" fill="#fff"/><rect x="306" y="138" width="60" height="24" rx="8" fill="#fff"/>';
+        s += '<rect x="168" y="178" width="18" height="34" fill="#8a7259"/><circle cx="177" cy="166" r="9" fill="#f2d9a6"/>';
+      } else if (kind === "bano") {
+        s = s.replace('<rect x="30" y="40" width="130" height="120"', '<rect x="30" y="40" width="70" height="70"');
+        for (var t = 0; t < 400; t += 40) for (var u = 0; u < 210; u += 30) s += '<rect x="' + (t + 1) + '" y="' + (u + 1) + '" width="38" height="28" fill="rgba(255,255,255,.25)"/>';
+        s += '<rect x="200" y="50" width="110" height="80" rx="40" fill="#dfe7ee" stroke="#9aa3ad" stroke-width="3"/>';
+        s += '<rect x="200" y="150" width="110" height="60" fill="' + c.accent + '"/><rect x="190" y="140" width="130" height="14" rx="6" fill="#f4f4f2"/>';
+        s += '<rect x="40" y="170" width="120" height="40" rx="8" fill="#f4f4f2"/>';
+      }
+    }
+    return s + "</svg>";
+  }
+
+  // ---------- Datos ----------
+  var ZONES = ["Centro", "Ensanche", "Playa", "Casco Antiguo", "Parque Norte", "Afueras"];
+  var PALS = [
+    { wall: "#e9e2d6", floor: "#c8a97e", accent: "#4f6d7a", sky: "#9ec5e8", roof: "#8a4b3a" },
+    { wall: "#dfe6ea", floor: "#b8a189", accent: "#7a5c4f", sky: "#a7cde6", roof: "#5b4a3f" },
+    { wall: "#efe9e1", floor: "#d2b48c", accent: "#2f5d50", sky: "#b3d4ea", roof: "#7a3e2e" },
+    { wall: "#e6e1ea", floor: "#a88f72", accent: "#5a5f8a", sky: "#9fc2df", roof: "#4f4a44" },
+    { wall: "#f0ece4", floor: "#bfa385", accent: "#a2563f", sky: "#a9d0ea", roof: "#6d3b2c" }
+  ];
+  var P = [
+    { id: 1, op: "venta", type: "Piso", t: "Piso reformado con balcón", z: "Centro", p: 245000, old: 259000, m2: 92, h: 3, b: 2, fl: "3.ª planta", y: 1972, e: "D", x: ["Ascensor", "Balcón", "Calefacción"], d: 3, ph: ["salon", "cocina", "dormitorio", "bano", "fachada"],
+      txt: ["Piso exterior totalmente reformado en 2023, a dos minutos de la plaza mayor.", "Salón con balcón a la calle, cocina independiente equipada, tres dormitorios y dos baños completos."] },
+    { id: 2, op: "venta", type: "Ático", t: "Ático con terraza y vistas al mar", z: "Playa", p: 485000, m2: 110, h: 3, b: 2, fl: "7.ª planta", y: 2008, e: "B", x: ["Ascensor", "Terraza", "Garaje", "Piscina"], d: 1, ph: ["vistas", "salon", "dormitorio", "cocina", "bano"], tall: true,
+      txt: ["Ático de esquina con 40 m² de terraza mirando al mar, plaza de garaje y trastero incluidos.", "Urbanización con piscina comunitaria y portero. Orientación sur con sol todo el día."] },
+    { id: 3, op: "venta", type: "Casa", t: "Casa con jardín en zona tranquila", z: "Afueras", p: 390000, m2: 180, h: 4, b: 3, fl: "2 plantas", y: 1998, e: "C", x: ["Jardín", "Garaje", "Calefacción"], d: 12, ph: ["fachada", "salon", "cocina", "dormitorio", "bano"], house: true,
+      txt: ["Casa independiente en parcela de 500 m² con jardín, barbacoa y garaje para dos coches.", "Cuatro dormitorios, uno en planta baja. A diez minutos en coche del centro."] },
+    { id: 4, op: "venta", type: "Estudio", t: "Estudio luminoso para invertir", z: "Casco Antiguo", p: 98000, m2: 38, h: 1, b: 1, fl: "2.ª planta", y: 1920, e: "E", x: ["Reformado"], d: 6, ph: ["salon", "cocina", "bano", "fachada"],
+      txt: ["Estudio en edificio rehabilitado del casco antiguo, ideal como inversión para alquiler.", "Techos altos con vigas de madera vistas y dos ventanas a calle peatonal."] },
+    { id: 5, op: "venta", type: "Piso", t: "Piso familiar junto al parque", z: "Parque Norte", p: 215000, m2: 105, h: 4, b: 2, fl: "1.ª planta", y: 1985, e: "E", x: ["Ascensor", "Trastero", "Calefacción"], d: 20, ph: ["salon", "dormitorio", "cocina", "bano", "fachada"],
+      txt: ["Amplio piso de cuatro dormitorios frente al parque, con colegios y supermercados a pie.", "Para actualizar a tu gusto. Incluye trastero."] },
+    { id: 6, op: "venta", type: "Dúplex", t: "Dúplex moderno con dos terrazas", z: "Ensanche", p: 340000, old: 355000, m2: 120, h: 3, b: 2, fl: "5.ª y 6.ª", y: 2015, e: "A", x: ["Ascensor", "Terraza", "Garaje", "Aire acondicionado"], d: 4, ph: ["salon", "vistas", "dormitorio", "cocina", "bano"], tall: true,
+      txt: ["Dúplex de construcción reciente con eficiencia energética A y aerotermia.", "Planta de día con cocina abierta y terraza; planta de noche con tres dormitorios y otra terraza."] },
+    { id: 7, op: "venta", type: "Piso", t: "Piso céntrico para entrar a vivir", z: "Centro", p: 189000, m2: 75, h: 2, b: 1, fl: "4.ª planta", y: 1968, e: "F", x: ["Ascensor", "Reformado"], d: 9, ph: ["salon", "cocina", "dormitorio", "bano"],
+      txt: ["Piso de dos dormitorios con suelo de madera y ventanas nuevas, en una calle comercial.", "Gastos de comunidad bajos y buena conexión en autobús."] },
+    { id: 8, op: "venta", type: "Casa", t: "Casa de piedra rehabilitada", z: "Afueras", p: 275000, m2: 140, h: 3, b: 2, fl: "2 plantas", y: 1890, e: "D", x: ["Jardín", "Chimenea"], d: 2, ph: ["fachada", "salon", "dormitorio", "cocina", "bano"], house: true,
+      txt: ["Casa tradicional de piedra rehabilitada en 2019, conservando muros y vigas originales.", "Huerta, frutales y chimenea en el salón."] },
+    { id: 9, op: "alquiler", type: "Piso", t: "Piso amueblado cerca de la playa", z: "Playa", p: 1150, m2: 80, h: 2, b: 1, fl: "2.ª planta", y: 2001, e: "C", x: ["Ascensor", "Amueblado", "Terraza"], d: 1, ph: ["salon", "vistas", "dormitorio", "cocina", "bano"],
+      txt: ["Piso amueblado a 200 metros de la playa, con terraza para comer fuera.", "Disponible a partir del mes que viene. Contrato de larga duración."] },
+    { id: 10, op: "alquiler", type: "Estudio", t: "Estudio para una persona", z: "Casco Antiguo", p: 620, m2: 32, h: 1, b: 1, fl: "Bajo", y: 1935, e: "E", x: ["Amueblado"], d: 5, ph: ["salon", "cocina", "bano"],
+      txt: ["Estudio coqueto y recién pintado en pleno casco antiguo.", "Ideal para una persona. Gastos de agua incluidos."] },
+    { id: 11, op: "alquiler", type: "Piso", t: "Piso de tres habitaciones con garaje", z: "Ensanche", p: 1300, m2: 98, h: 3, b: 2, fl: "6.ª planta", y: 2010, e: "B", x: ["Ascensor", "Garaje", "Aire acondicionado"], d: 3, ph: ["salon", "dormitorio", "cocina", "bano", "fachada"], tall: true,
+      txt: ["Piso moderno con plaza de garaje incluida en el precio.", "Sin amueblar, con cocina equipada. Admite mascotas."] },
+    { id: 12, op: "alquiler", type: "Ático", t: "Ático con terraza en el centro", z: "Centro", p: 1450, old: 1550, m2: 85, h: 2, b: 2, fl: "8.ª planta", y: 1995, e: "C", x: ["Ascensor", "Terraza", "Amueblado"], d: 7, ph: ["vistas", "salon", "dormitorio", "cocina", "bano"], tall: true,
+      txt: ["Ático con terraza de 25 m² y vistas a los tejados del centro.", "Dos dormitorios, cada uno con su baño."] },
+    { id: 13, op: "alquiler", type: "Casa", t: "Casa con jardín para familias", z: "Parque Norte", p: 1600, m2: 160, h: 4, b: 3, fl: "2 plantas", y: 2004, e: "C", x: ["Jardín", "Garaje", "Calefacción"], d: 14, ph: ["fachada", "salon", "cocina", "dormitorio", "bano"], house: true,
+      txt: ["Casa adosada con jardín propio y garaje, junto a colegios y zonas verdes.", "Cuatro dormitorios y una buhardilla que se puede usar como despacho."] },
+    { id: 14, op: "venta", type: "Piso", t: "Piso de obra nueva con piscina", z: "Ensanche", p: 299000, m2: 88, h: 2, b: 2, fl: "2.ª planta", y: 2026, e: "A", x: ["Ascensor", "Piscina", "Garaje", "Terraza"], d: 0, ph: ["salon", "vistas", "dormitorio", "cocina", "bano"], tall: true,
+      txt: ["Vivienda de obra nueva con entrega este año, plaza de garaje y trastero.", "Urbanización cerrada con piscina, gimnasio y zona infantil."] }
+  ];
+  P.forEach(function (x, i) { var pal = PALS[i % PALS.length]; x.c = { k: x.id, wall: pal.wall, floor: pal.floor, accent: pal.accent, sky: pal.sky, roof: pal.roof, tall: x.tall, house: x.house }; });
+  var ALL_EXTRAS = ["Ascensor", "Terraza", "Garaje", "Piscina", "Jardín", "Amueblado"];
+  var PH_NAMES = { fachada: "Fachada", salon: "Salón", cocina: "Cocina", dormitorio: "Dormitorio", bano: "Baño", vistas: "Terraza y vistas" };
+
+  // ---------- Estado ----------
+  var S = { op: "venta", zone: "", max: 0, min: 0, rooms: 0, baths: 0, area: 0, type: "", extras: {}, sort: "rel", favOnly: false };
+  var favs = {};
+  try { favs = JSON.parse(localStorage.getItem("mirador-favs") || "{}") || {}; } catch (e) { favs = {}; }
+  function saveFavs() { try { localStorage.setItem("mirador-favs", JSON.stringify(favs)); } catch (e) {} }
+
+  // ---------- Controles ----------
+  $("sZone").innerHTML += ZONES.map(function (z) { return "<option>" + z + "</option>"; }).join("");
+  function fillMax() {
+    var opts = S.op === "venta" ? [0, 150000, 200000, 250000, 300000, 400000, 500000] : [0, 700, 900, 1200, 1500, 2000];
+    $("sMax").innerHTML = opts.map(function (v) { return '<option value="' + v + '">' + (v ? "Hasta " + eur(v) + (S.op === "alquiler" ? "/mes" : "") : "Sin límite") + "</option>"; }).join("");
+    $("sMax").value = String(S.max && opts.indexOf(S.max) >= 0 ? S.max : 0);
+  }
+  function renderSteps(id, key, vals) {
+    $(id).innerHTML = vals.map(function (v) { return '<button type="button" data-v="' + v + '" aria-pressed="' + (S[key] === v) + '">' + (v === 0 ? "Todas" : v + "+") + "</button>"; }).join("");
+  }
+  function renderExtras() {
+    $("fExtras").innerHTML = "<h3>Características</h3>" + ALL_EXTRAS.map(function (x, i) {
+      return '<label class="check"><input type="checkbox" id="ex' + i + '" data-x="' + x + '"' + (S.extras[x] ? " checked" : "") + "> " + x + "</label>";
+    }).join("");
+  }
+  function syncControls() {
+    document.querySelectorAll("[data-op]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.op === S.op); });
+    fillMax();
+    $("sZone").value = S.zone; $("sRooms").value = String(Math.min(S.rooms, 4));
+    $("fMin").value = S.min || ""; $("fMax").value = S.max || "";
+    $("fArea").value = String(S.area); $("fType").value = S.type;
+    renderSteps("fRooms", "rooms", [0, 1, 2, 3, 4]); renderSteps("fBaths", "baths", [0, 1, 2, 3]); renderExtras();
+    $("favBtn").setAttribute("aria-pressed", S.favOnly);
+    $("favCount").textContent = Object.keys(favs).length;
+  }
+
+  // ---------- Resultados ----------
+  function results() {
+    var list = P.filter(function (x) {
+      if (S.favOnly) return !!favs[x.id];
+      if (x.op !== S.op) return false;
+      if (S.zone && x.z !== S.zone) return false;
+      if (S.max && x.p > S.max) return false;
+      if (S.min && x.p < S.min) return false;
+      if (x.h < S.rooms || x.b < S.baths || x.m2 < S.area) return false;
+      if (S.type && x.type !== S.type) return false;
+      for (var k in S.extras) if (S.extras[k] && x.x.indexOf(k) < 0) return false;
+      return true;
+    });
+    var s = S.sort;
+    list.sort(function (a, b) {
+      if (s === "asc") return a.p - b.p;
+      if (s === "desc") return b.p - a.p;
+      if (s === "new") return a.d - b.d;
+      if (s === "m2") return a.p / a.m2 - b.p / b.m2;
+      return (b.old ? 1 : 0) - (a.old ? 1 : 0) || a.d - b.d;
+    });
+    return list;
+  }
+  function priceHTML(x) {
+    var unit = x.op === "alquiler" ? "/mes" : "";
+    return eur(x.p) + unit + (x.old ? " <s>" + eur(x.old) + "</s>" : "") + (x.op === "venta" ? " <small>" + n(x.p / x.m2) + " €/m²</small>" : "");
+  }
+  var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>';
+  function render() {
+    var list = results();
+    var label = S.favOnly ? "Tus favoritos" : (S.op === "venta" ? "Viviendas en venta" : "Viviendas en alquiler") + (S.zone ? " en " + S.zone : "");
+    $("rTitle").textContent = label + " (" + list.length + ")";
+    if (!list.length) {
+      $("grid").innerHTML = '<div class="empty">' + (S.favOnly ? "Todavía no has guardado ninguna vivienda. Pulsa el corazón de cualquier anuncio para guardarla aquí." : "No hay viviendas con estos filtros. Prueba a subir el precio máximo o quitar alguna característica.") + "</div>";
+      return;
+    }
+    $("grid").innerHTML = list.map(function (x) {
+      var badges = (x.d <= 2 ? '<span class="badge">Nuevo</span>' : "") + (x.old ? '<span class="badge drop">↓ Ha bajado ' + eur(x.old - x.p) + "</span>" : "");
+      return '<article class="card" data-id="' + x.id + '" tabindex="0" aria-label="' + esc(x.t) + '"><div class="thumb">' + scene(x.ph[0], x.c) + '<div class="badges">' + badges + '</div><button class="heart" type="button" data-fav="' + x.id + '" aria-pressed="' + !!favs[x.id] + '" aria-label="Guardar en favoritos">' + HEART + '</button></div><div class="cbody"><div class="price">' + priceHTML(x) + '</div><h3 class="ctitle">' + esc(x.t) + '</h3><p class="zone">' + esc(x.type + " · " + x.z) + '</p><div class="facts"><span><b>' + x.h + "</b> hab.</span><span><b>" + x.b + "</b> " + (x.b === 1 ? "baño" : "baños") + "</span><span><b>" + x.m2 + "</b> m²</span><span>" + esc(x.fl) + "</span></div></div></article>";
+    }).join("");
+  }
+  function update() { syncControls(); render(); }
+
+  // ---------- Eventos de filtros ----------
+  document.querySelectorAll("[data-op]").forEach(function (b) { b.addEventListener("click", function () { S.op = b.dataset.op; S.max = 0; S.min = 0; S.favOnly = false; update(); }); });
+  $("search").addEventListener("submit", function (e) {
+    e.preventDefault(); S.zone = $("sZone").value; S.max = +$("sMax").value; S.rooms = +$("sRooms").value; S.favOnly = false; update();
+    document.getElementById("resultados").scrollIntoView({ behavior: "smooth" });
+  });
+  $("sZone").addEventListener("change", function () { S.zone = this.value; update(); });
+  $("sMax").addEventListener("change", function () { S.max = +this.value; update(); });
+  $("sRooms").addEventListener("change", function () { S.rooms = +this.value; update(); });
+  $("fMin").addEventListener("change", function () { S.min = +this.value || 0; update(); });
+  $("fMax").addEventListener("change", function () { S.max = +this.value || 0; update(); });
+  $("fRooms").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { S.rooms = +b.dataset.v; update(); } });
+  $("fBaths").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { S.baths = +b.dataset.v; update(); } });
+  $("fArea").addEventListener("change", function () { S.area = +this.value; update(); });
+  $("fType").addEventListener("change", function () { S.type = this.value; update(); });
+  $("fExtras").addEventListener("change", function (e) { var c = e.target.closest("[data-x]"); if (c) { S.extras[c.dataset.x] = c.checked; update(); } });
+  $("sort").addEventListener("change", function () { S.sort = this.value; render(); });
+  $("clearAll").addEventListener("click", function () { S = { op: S.op, zone: "", max: 0, min: 0, rooms: 0, baths: 0, area: 0, type: "", extras: {}, sort: S.sort, favOnly: false }; update(); });
+  $("favBtn").addEventListener("click", function () { S.favOnly = !S.favOnly; update(); document.getElementById("resultados").scrollIntoView({ behavior: "smooth" }); });
+  $("toggleFilters").addEventListener("click", function () { var o = $("filters").classList.toggle("open"); this.setAttribute("aria-expanded", o); });
+
+  function toggleFav(id) { if (favs[id]) delete favs[id]; else favs[id] = 1; saveFavs(); }
+  $("grid").addEventListener("click", function (e) {
+    var f = e.target.closest("[data-fav]");
+    if (f) { e.stopPropagation(); toggleFav(f.dataset.fav); update(); return; }
+    var c = e.target.closest(".card"); if (c) openDetail(+c.dataset.id);
+  });
+  $("grid").addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.classList.contains("card")) openDetail(+e.target.dataset.id); });
+
+  // ---------- Ficha ----------
+  var cur = null, img = 0, calc = { down: 20, years: 30, tin: 2.9 }, visit = { slot: null, sent: false }, lastFocus = null;
+  var ECOL = { A: "#1a8f3c", B: "#4caf3e", C: "#a6c834", D: "#f2d21b", E: "#f3a41b", F: "#ea6b1f", G: "#d8261f" };
+  function openDetail(id) {
+    cur = P.find(function (x) { return x.id === id; }); img = 0; visit = { slot: null, sent: false }; lastFocus = document.activeElement;
+    renderDetail(); $("overlay").classList.add("on"); $("detail").classList.add("on"); $("detail").scrollTop = 0; document.body.classList.add("locked");
+    setTimeout(function () { var b = $("detail").querySelector("[data-close]"); if (b) b.focus(); }, 50);
+  }
+  function closeDetail() { $("overlay").classList.remove("on"); $("detail").classList.remove("on"); document.body.classList.remove("locked"); render(); if (lastFocus) lastFocus.focus(); }
+  function quota() {
+    var price = cur.p, loan = price * (1 - calc.down / 100), r = calc.tin / 100 / 12, nm = calc.years * 12;
+    var q = r ? loan * r / (1 - Math.pow(1 + r, -nm)) : loan / nm;
+    return { loan: loan, q: q, interest: q * nm - loan, taxes: price * 0.1, entry: price * calc.down / 100 };
+  }
+  function slotsHTML() {
+    var out = "", d = new Date(), names = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"], c = 0;
+    for (var i = 1; c < 6 && i < 12; i++) {
+      var x = new Date(d.getFullYear(), d.getMonth(), d.getDate() + i); if (x.getDay() === 0) continue;
+      [x.getDay() === 6 ? "11:00" : "10:00", x.getDay() === 6 ? "12:30" : "18:00"].forEach(function (h) {
+        if (c >= 6) return; var key = x.getDate() + "-" + h; c++;
+        out += '<button type="button" data-slot="' + key + '" data-label="' + names[x.getDay()] + " " + x.getDate() + ", " + h + '" aria-pressed="' + (visit.slot === key) + '">' + names[x.getDay()] + " " + x.getDate() + "<small>" + h + "</small></button>";
+      });
+    }
+    return out;
+  }
+  function calcHTML() {
+    if (cur.op === "alquiler") {
+      return '<div class="panel"><h3>Condiciones del alquiler</h3><div class="qrow"><span>Renta mensual</span><b>' + eur(cur.p) + '</b></div><div class="qrow"><span>Fianza legal (1 mes)</span><b>' + eur(cur.p) + '</b></div><div class="qrow"><span>Primer mes</span><b>' + eur(cur.p) + '</b></div><div class="qrow" style="border-top:1px solid var(--line);padding-top:8px"><span>Total a la firma</span><b>' + eur(cur.p * 2) + '</b></div><p class="note">Sin honorarios de agencia para el inquilino. Se recomienda que la renta no supere el 30 % de tus ingresos: necesitarías unos ' + eur(cur.p / 0.3) + " netos al mes.</p></div>";
+    }
+    var q = quota();
+    return '<div class="panel calc" id="calc"><h3>Calcula tu hipoteca</h3>' +
+      '<div class="cfield"><label for="cDown">Entrada <b>' + calc.down + " % · " + eur(q.entry) + '</b></label><input type="range" id="cDown" min="10" max="50" step="5" value="' + calc.down + '"></div>' +
+      '<div class="cfield"><label for="cYears">Plazo <b>' + calc.years + ' años</b></label><input type="range" id="cYears" min="10" max="35" step="5" value="' + calc.years + '"></div>' +
+      '<div class="cfield"><label for="cTin">Interés fijo (TIN) <b>' + calc.tin.toFixed(1).replace(".", ",") + ' %</b></label><input type="range" id="cTin" min="1.5" max="5" step="0.1" value="' + calc.tin + '"></div>' +
+      '<div class="quota"><span class="note">Cuota mensual aproximada</span><b>' + eur(q.q) + '/mes</b><div class="qrow"><span>Importe del préstamo</span><span>' + eur(q.loan) + '</span></div><div class="qrow"><span>Intereses totales</span><span>' + eur(q.interest) + '</span></div><div class="qrow"><span>Impuestos y gastos (≈10 %)</span><span>' + eur(q.taxes) + '</span></div><div class="qrow"><span>Ahorro necesario</span><b style="font-size:1rem">' + eur(q.entry + q.taxes) + "</b></div></div>" +
+      '<p class="note">Cálculo orientativo. El banco puede pedir entrada mínima del 20 % y los impuestos dependen de la comunidad autónoma.</p></div>';
+  }
+  function energyHTML() {
+    return '<div class="panel"><h3>Certificado energético</h3><div class="energy">' + "ABCDEFG".split("").map(function (L, i) {
+      return '<div class="erow"><span class="ebar" style="width:' + (38 + i * 9) + '%;background:' + ECOL[L] + '">' + L + "</span>" + (L === cur.e ? '<span class="emark">' + L + "</span>" : "<span></span>") + "</div>";
+    }).join("") + '</div><p class="note">Consumo de energía. La A es la más eficiente.</p></div>';
+  }
+  function visitHTML() {
+    if (visit.sent) return '<div class="panel"><h3>Solicitar visita</h3><div class="ok"><b>✓ Visita solicitada</b><p>' + esc(visit.msg) + "</p><p>Demostración: no se ha enviado ningún aviso.</p></div></div>";
+    return '<div class="panel"><h3>Solicitar visita</h3><p class="note" style="font-size:.9rem">Elige un hueco y te confirmamos por teléfono.</p><div class="slots" id="slots">' + slotsHTML() + '</div><div class="vfields"><input id="vName" placeholder="Nombre" autocomplete="name" aria-label="Nombre"><input id="vPhone" placeholder="Teléfono" inputmode="tel" autocomplete="tel" aria-label="Teléfono"></div><p class="err" id="vErr"></p><button class="btn" type="button" data-visit>Solicitar visita</button></div>';
+  }
+  function renderDetail() {
+    var x = cur, ph = x.ph;
+    $("detail").innerHTML = '<div class="dtop"><button class="ibtn" type="button" data-close>← Volver</button><span class="ref">Ref. MF-' + (1000 + x.id) + '</span><div class="dact"><button class="ibtn" type="button" data-dfav aria-pressed="' + !!favs[x.id] + '">' + HEART + (favs[x.id] ? "Guardado" : "Guardar") + "</button></div></div>" +
+      '<div class="dbody"><div style="display:grid;gap:20px;min-width:0">' +
+      '<div class="gallery"><div class="gmain">' + scene(ph[img], x.c) + '<button class="gnav prev" type="button" data-g="-1" aria-label="Imagen anterior">‹</button><button class="gnav next" type="button" data-g="1" aria-label="Imagen siguiente">›</button><span class="gcap">' + PH_NAMES[ph[img]] + '</span><span class="gcount">' + (img + 1) + " / " + ph.length + '</span></div><div class="gthumbs">' +
+      ph.map(function (k, i) { return '<button type="button" data-i="' + i + '" aria-current="' + (i === img) + '" aria-label="' + PH_NAMES[k] + '">' + scene(k, x.c) + "</button>"; }).join("") + '</div><p class="note">Imágenes ilustrativas.</p></div>' +
+      '<div class="panel"><div class="price">' + priceHTML(x) + '</div><h2 id="dTitle">' + esc(x.t) + '</h2><p class="zone">' + esc(x.type + " en " + x.z) + '</p><div class="kv"><div><small>Superficie</small><b>' + x.m2 + ' m²</b></div><div><small>Habitaciones</small><b>' + x.h + '</b></div><div><small>Baños</small><b>' + x.b + '</b></div><div><small>Planta</small><b>' + esc(x.fl) + '</b></div><div><small>Año</small><b>' + x.y + '</b></div><div><small>Publicado</small><b>' + (x.d === 0 ? "Hoy" : x.d === 1 ? "Ayer" : "Hace " + x.d + " días") + '</b></div></div><div class="extras">' + x.x.map(function (e) { return "<span>" + esc(e) + "</span>"; }).join("") + '</div><div class="desc">' + x.txt.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") + "</div></div>" +
+      energyHTML() + '</div><div style="display:grid;gap:20px;min-width:0">' + calcHTML() + visitHTML() + "</div></div>";
+  }
+  $("detail").addEventListener("click", function (e) {
+    var t = e.target;
+    if (t.closest("[data-close]")) return closeDetail();
+    if (t.closest("[data-dfav]")) { toggleFav(cur.id); syncControls(); renderDetail(); return; }
+    var g = t.closest("[data-g]"); if (g) { img = (img + +g.dataset.g + cur.ph.length) % cur.ph.length; renderDetail(); return; }
+    var th = t.closest("[data-i]"); if (th) { img = +th.dataset.i; renderDetail(); return; }
+    var sl = t.closest("[data-slot]"); if (sl) { visit.slot = sl.dataset.slot; visit.label = sl.dataset.label; $("slots").querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === sl); }); return; }
+    if (t.closest("[data-visit]")) {
+      var name = $("vName").value.trim(), phone = $("vPhone").value.replace(/\s/g, ""), msg = "";
+      if (!visit.slot) msg = "Elige un día y una hora para la visita.";
+      else if (name.length < 2) msg = "Escribe tu nombre.";
+      else if (!/^(\+34)?[6789]\d{8}$/.test(phone)) msg = "Escribe un teléfono de 9 cifras, por ejemplo 612 345 678.";
+      $("vErr").textContent = msg; if (msg) return;
+      visit.sent = true; visit.msg = name.split(" ")[0] + ", te llamaremos al " + $("vPhone").value.trim() + " para confirmar la visita del " + visit.label + " h.";
+      renderDetail();
+    }
+  });
+  $("detail").addEventListener("input", function (e) {
+    var id = e.target.id; if (id !== "cDown" && id !== "cYears" && id !== "cTin") return;
+    calc.down = +$("cDown").value; calc.years = +$("cYears").value; calc.tin = +$("cTin").value;
+    var c = document.getElementById("calc"), tmp = document.createElement("div"); tmp.innerHTML = calcHTML();
+    // Actualiza solo los textos para no perder el foco del deslizador
+    var nw = tmp.firstChild;
+    c.querySelectorAll("label b").forEach(function (b, i) { b.textContent = nw.querySelectorAll("label b")[i].textContent; });
+    c.querySelector(".quota").innerHTML = nw.querySelector(".quota").innerHTML;
+  });
+  $("overlay").addEventListener("click", closeDetail);
+  document.addEventListener("keydown", function (e) {
+    if (!$("detail").classList.contains("on")) return;
+    if (e.key === "Escape") closeDetail();
+    if ((e.key === "ArrowRight" || e.key === "ArrowLeft") && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { img = (img + (e.key === "ArrowRight" ? 1 : -1) + cur.ph.length) % cur.ph.length; renderDetail(); }
+  });
+
+  update();
+})();
+</script>
+
+</body>
+</html>
