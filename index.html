@@ -148,7 +148,9 @@ h2 em { color: var(--accent); }
 .link-arrow:hover { color: var(--accent); }
 
 /* Proyecto destacado: Reps (app en React) */
-.feature.app { margin-bottom: 72px; }
+.apps-head { margin: 88px 0 28px; display: flex; flex-direction: column; gap: 10px; }
+.apps-head h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.9rem, 3.6vw, 2.6rem); line-height: 1.05; margin: 0; }
+.apps-head h3 em { color: var(--accent); }
 .phones { display: flex; justify-content: center; align-items: flex-end; gap: 14px; }
 .phone { flex: 1 1 0; max-width: 190px; border-radius: 26px; border: 5px solid #15171c; overflow: hidden; background: #15171c; box-shadow: 0 24px 50px -24px rgba(21, 23, 28, .45); }
 .phone:nth-child(2) { transform: translateY(-22px); }
@@ -161,7 +163,7 @@ h2 em { color: var(--accent); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phone { border-color: #2a2e37; } }
 .feature h3 em { color: var(--accent); }
 .feature .links { display: flex; gap: 22px; flex-wrap: wrap; }
-@media (max-width: 860px) { .feature.app { margin-bottom: 48px; } .phone { border-width: 4px; border-radius: 20px; } .phones { gap: 10px; } .phone:nth-child(2) { transform: translateY(-14px); } }
+@media (max-width: 860px) { .apps-head { margin-top: 60px; } .phone { border-width: 4px; border-radius: 20px; } .phones { gap: 10px; } .phone:nth-child(2) { transform: translateY(-14px); } }
 
 /* Upcoming projects */
 .upcoming { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
@@ -325,24 +327,6 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
       <p class="sec-note">Trabajo real en empresa y proyectos propios que muestran lo que puedo construir para ti.</p>
     </div>
 
-    <article class="feature app" aria-labelledby="reps-title">
-      <div>
-        <span class="label">App propia · React y TypeScript</span>
-        <h3 id="reps-title">Reps, diario de <em>entrenamiento</em></h3>
-        <p>Mi primera app con React y TypeScript. Apuntas tus series en el gimnasio, te propone el peso de la última vez y te enseña en gráficas cómo vas mejorando. Se instala en el móvil y funciona sin conexión.</p>
-        <div class="tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Vite</span><span class="tag">PWA</span><span class="tag">Tests</span></div>
-        <div class="links">
-          <a class="link-arrow" href="https://rubenj0806.github.io/Reps/" target="_blank" rel="noopener">Probar la app →</a>
-          <a class="link-arrow" href="https://github.com/Rubenj0806/Reps" target="_blank" rel="noopener">Ver el código →</a>
-        </div>
-      </div>
-      <div class="phones">
-        <div class="phone"><img class="lt" src="img/reps-inicio-light.webp" alt="Pantalla de inicio de Reps con el resumen de la semana" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-inicio-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
-        <div class="phone"><img class="lt" src="img/reps-entreno-light.webp" alt="Entreno en curso en Reps con series y temporizador de descanso" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-entreno-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
-        <div class="phone"><img class="lt" src="img/reps-progreso-light.webp" alt="Gráfica de progreso del press de banca en Reps" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-progreso-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
-      </div>
-    </article>
-
     <div class="reel" id="reel">
       <div class="reel-sticky" id="reelSticky">
         <span class="reel-count" id="reelCount" aria-hidden="true"></span>
@@ -405,6 +389,27 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
         <a class="link-arrow" href="forja/" target="_blank" rel="noopener">Probar la demo →</a>
       </div>
     </div>
+    <div class="apps-head">
+      <h3>Y también <em>apps</em>.</h3>
+      <p class="sec-note">Además de webs, he empezado a hacer aplicaciones con React y TypeScript.</p>
+    </div>
+    <article class="feature app" aria-labelledby="reps-title">
+      <div>
+        <span class="label">App propia · React y TypeScript</span>
+        <h3 id="reps-title">Reps, diario de <em>entrenamiento</em></h3>
+        <p>Mi primera app con React y TypeScript. Apuntas tus series en el gimnasio, te propone el peso de la última vez y te enseña en gráficas cómo vas mejorando. Se instala en el móvil y funciona sin conexión.</p>
+        <div class="tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Vite</span><span class="tag">PWA</span><span class="tag">Tests</span></div>
+        <div class="links">
+          <a class="link-arrow" href="https://rubenj0806.github.io/Reps/" target="_blank" rel="noopener">Probar la app →</a>
+          <a class="link-arrow" href="https://github.com/Rubenj0806/Reps" target="_blank" rel="noopener">Ver el código →</a>
+        </div>
+      </div>
+      <div class="phones">
+        <div class="phone"><img class="lt" src="img/reps-inicio-light.webp" alt="Pantalla de inicio de Reps con el resumen de la semana" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-inicio-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
+        <div class="phone"><img class="lt" src="img/reps-entreno-light.webp" alt="Entreno en curso en Reps con series y temporizador de descanso" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-entreno-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
+        <div class="phone"><img class="lt" src="img/reps-progreso-light.webp" alt="Gráfica de progreso del press de banca en Reps" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-progreso-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
+      </div>
+    </article>
   </section>
 
   <section id="servicios">
