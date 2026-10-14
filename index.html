@@ -5,7 +5,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rubenj0806.github.io/">
 <meta property="og:title" content="Ruben Medina · Desarrollador web freelance">
-<meta property="og:description" content="Diseño y construyo webs interactivas y fáciles de usar. Mira mi portafolio y prueba mis 5 webs de demostración.">
+<meta property="og:description" content="Diseño y construyo webs interactivas y fáciles de usar. Mira mi portafolio y prueba mis webs de demostración y mi app de entrenamiento.">
 <meta property="og:image" content="https://rubenj0806.github.io/preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="627">
@@ -146,6 +146,22 @@ h2 em { color: var(--accent); }
 .tag { font-family: var(--font-mono); font-size: .74rem; background: var(--accent-soft); color: var(--accent); padding: 5px 10px; border-radius: 6px; }
 .link-arrow { font-weight: 600; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
 .link-arrow:hover { color: var(--accent); }
+
+/* Proyecto destacado: Reps (app en React) */
+.feature.app { margin-bottom: 72px; }
+.phones { display: flex; justify-content: center; align-items: flex-end; gap: 14px; }
+.phone { flex: 1 1 0; max-width: 190px; border-radius: 26px; border: 5px solid #15171c; overflow: hidden; background: #15171c; box-shadow: 0 24px 50px -24px rgba(21, 23, 28, .45); }
+.phone:nth-child(2) { transform: translateY(-22px); }
+.phone img { display: block; width: 100%; height: auto; }
+.phone .dk { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phone .lt { display: none; } :root:not([data-theme="light"]) .phone .dk { display: block; } }
+:root[data-theme="dark"] .phone .lt { display: none; }
+:root[data-theme="dark"] .phone .dk { display: block; }
+:root[data-theme="dark"] .phone { border-color: #2a2e37; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phone { border-color: #2a2e37; } }
+.feature h3 em { color: var(--accent); }
+.feature .links { display: flex; gap: 22px; flex-wrap: wrap; }
+@media (max-width: 860px) { .feature.app { margin-bottom: 48px; } .phone { border-width: 4px; border-radius: 20px; } .phones { gap: 10px; } .phone:nth-child(2) { transform: translateY(-14px); } }
 
 /* Upcoming projects */
 .upcoming { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
@@ -296,6 +312,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
   nombre: <span class="c-str">"Ruben Jesus Medina"</span>,
   rol: <span class="c-str">"Desarrollo web · Freelance"</span>,
   stack: [<span class="c-str">"HTML"</span>, <span class="c-str">"CSS"</span>, <span class="c-str">"JavaScript"</span>],
+  aprendiendo: [<span class="c-str">"React"</span>, <span class="c-str">"TypeScript"</span>],
   idiomas: [<span class="c-str">"Español"</span>],
   disponible: <span class="c-key">true</span>,
 }; <span class="caret" aria-hidden="true"></span></pre>
@@ -307,6 +324,24 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
       <h2>Proyectos <em>seleccionados</em></h2>
       <p class="sec-note">Trabajo real en empresa y proyectos propios que muestran lo que puedo construir para ti.</p>
     </div>
+
+    <article class="feature app" aria-labelledby="reps-title">
+      <div>
+        <span class="label">App propia · React y TypeScript</span>
+        <h3 id="reps-title">Reps, diario de <em>entrenamiento</em></h3>
+        <p>Mi primera app con React y TypeScript. Apuntas tus series en el gimnasio, te propone el peso de la última vez y te enseña en gráficas cómo vas mejorando. Se instala en el móvil y funciona sin conexión.</p>
+        <div class="tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Vite</span><span class="tag">PWA</span><span class="tag">Tests</span></div>
+        <div class="links">
+          <a class="link-arrow" href="https://rubenj0806.github.io/Reps/" target="_blank" rel="noopener">Probar la app →</a>
+          <a class="link-arrow" href="https://github.com/Rubenj0806/Reps" target="_blank" rel="noopener">Ver el código →</a>
+        </div>
+      </div>
+      <div class="phones">
+        <div class="phone"><img class="lt" src="img/reps-inicio-light.webp" alt="Pantalla de inicio de Reps con el resumen de la semana" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-inicio-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
+        <div class="phone"><img class="lt" src="img/reps-entreno-light.webp" alt="Entreno en curso en Reps con series y temporizador de descanso" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-entreno-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
+        <div class="phone"><img class="lt" src="img/reps-progreso-light.webp" alt="Gráfica de progreso del press de banca en Reps" width="520" height="1040" loading="lazy"><img class="dk" src="img/reps-progreso-dark.webp" alt="" width="520" height="1040" loading="lazy"></div>
+      </div>
+    </article>
 
     <div class="reel" id="reel">
       <div class="reel-sticky" id="reelSticky">
@@ -405,9 +440,9 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; display: f
       </div>
       <div>
         <p class="big">Me gusta que las cosas funcionen bien y se vean bien. Las dos cosas a la vez.</p>
-        <p>Soy desarrollador web y trabajo con HTML, CSS y JavaScript. Ya he trabajado en proyectos reales de empresa, y ahora ofrezco mi trabajo como freelance a negocios y personas que quieren una presencia online cuidada.</p>
+        <p>Soy desarrollador web y trabajo con HTML, CSS y JavaScript. Hace poco empecé con React y TypeScript, y mi primera app con ellos es Reps. Ya he trabajado en proyectos reales de empresa, y ahora ofrezco mi trabajo como freelance a negocios y personas que quieren una presencia online cuidada.</p>
         <p>Me tomo en serio los detalles: que la web se lea bien en el móvil, que cargue rápido y que tus clientes encuentren lo que buscan sin pensar.</p>
-        <div class="stack"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Diseño responsive</span><span>Animaciones</span><span>React</span></div>
+        <div class="stack"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Diseño responsive</span><span>Animaciones</span><span>React</span><span>TypeScript</span></div>
       </div>
     </div>
   </section>
